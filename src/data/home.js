@@ -8,7 +8,7 @@ export const SLIDES = [
     eyebrow: 'Virginia Legends Cricket Club · Est. 2008',
     title: 'Where the DMV Comes to Play',
     text: 'A community of cricketers bringing competitive, fast-paced cricket to Virginia, Maryland and DC — one big weekend a year.',
-    cta: { label: 'Register Your Team', to: '/register' },
+    cta: null,
     image: '/images/va-legends-squad.jpg',
     gradient: 'g1',
   },

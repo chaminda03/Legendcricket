@@ -49,8 +49,16 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Virginia Legends Cricket Club. All rights reserved.</span>
-          <span>Made for the love of the game 🏏</span>
+          <span>
+            © {new Date().getFullYear()} Virginia Legends Cricket Club
+            <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
+            Web design by <a href="https://scsdatagroup.com/projects/" target="_blank" rel="noopener noreferrer" className="admin-link">SCS Data Group</a>
+          </span>
+          <span>
+            <Link to="/admin/login" className="admin-link">Committee Login</Link>
+            <span style={{ margin: '0 8px', opacity: 0.4 }}>·</span>
+            Made for the love of the game 🏏
+          </span>
         </div>
       </div>
     </footer>

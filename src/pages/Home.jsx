@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 import StandingsTable from '../components/StandingsTable'
 import Carousel from '../components/Carousel'
-import { completedFixtures, LAST_COMPLETED_SEASON } from '../data/seasons'
-import { getTeam } from '../data/teams'
+import { LAST_COMPLETED_SEASON } from '../data/seasons'
+import { useSeasonData } from '../hooks/useSeasonData'
+import { standingsByGroup, indexById } from '../data/compute'
 import { SLIDES, VALUES, GALLERY, ABOUT_IMAGE } from '../data/home'
 
 const features = [
@@ -13,23 +14,15 @@ const features = [
 ]
 
 export default function Home() {
-  const recent = completedFixtures(LAST_COMPLETED_SEASON).slice(-3).reverse()
+  const { teams, matches } = useSeasonData(LAST_COMPLETED_SEASON)
+  const teamsById = indexById(teams)
+  const groupA = standingsByGroup(teams, matches)['A'] || []
+  const recent = matches.filter((m) => m.status === 'completed').slice(-3).reverse()
 
   return (
     <>
       {/* CAROUSEL */}
       <Carousel slides={SLIDES} />
-
-      {/* STATS BAND */}
-      <section className="stats-band">
-        <div className="container hero-stats" style={{ justifyContent: 'space-around', marginTop: 0 }}>
-          <div className="stat"><div className="n">16</div><div className="l">Teams</div></div>
-          <div className="stat"><div className="n">4</div><div className="l">Groups</div></div>
-          <div className="stat"><div className="n">6</div><div className="l">A Side</div></div>
-          <div className="stat"><div className="n">5</div><div className="l">Overs</div></div>
-          <div className="stat"><div className="n">1</div><div className="l">Trophy</div></div>
-        </div>
-      </section>
 
       {/* ABOUT */}
       <section className="section">
@@ -94,7 +87,7 @@ export default function Home() {
             </div>
             <Link to="/points-table" className="btn btn-ghost">All Groups →</Link>
           </div>
-          <StandingsTable year={LAST_COMPLETED_SEASON} group="A" />
+          <StandingsTable rows={groupA} teamsById={teamsById} />
           <div className="legend">
             <span className="k"><span className="swatch" style={{ background: 'var(--primary)' }} /> Top 2 qualify for Quarterfinals</span>
             <span className="k">P Played · W Won · L Lost · T Tied · NRR Net Run Rate</span>
@@ -114,12 +107,12 @@ export default function Home() {
           </div>
           <div className="grid" style={{ gap: 14 }}>
             {recent.map((m) => {
-              const h = getTeam(m.home), a = getTeam(m.away)
-              const homeWon = m.result.home.runs > m.result.away.runs
+              const h = teamsById[m.home_team] || {}, a = teamsById[m.away_team] || {}
+              const homeWon = m.home_runs > m.away_runs
               return (
                 <div key={m.id} className="card" style={{ padding: 16 }}>
                   <div className="match-meta">
-                    <span className="tag grp">Group {m.group}</span>
+                    <span className="tag grp">Group {m.grp}</span>
                     <span className="tag done">Result</span>
                   </div>
                   <div className="match" style={{ border: 0, padding: 0, background: 'transparent' }}>
@@ -127,7 +120,7 @@ export default function Home() {
                       <span className="tb-sm" style={{ background: h.color }}>{h.short}</span>
                       <div>
                         <div className={`name ${homeWon ? 'won' : ''}`}>{h.name}</div>
-                        <div className="score">{m.result.home.runs}/{m.result.home.wickets} ({m.result.home.overs})</div>
+                        <div className="score">{m.home_runs}/{m.home_wkts} ({m.home_overs})</div>
                       </div>
                     </div>
                     <div className="mid"><span className="vs">—</span></div>
@@ -135,7 +128,7 @@ export default function Home() {
                       <span className="tb-sm" style={{ background: a.color }}>{a.short}</span>
                       <div>
                         <div className={`name ${!homeWon ? 'won' : ''}`}>{a.name}</div>
-                        <div className="score">{m.result.away.runs}/{m.result.away.wickets} ({m.result.away.overs})</div>
+                        <div className="score">{m.away_runs}/{m.away_wkts} ({m.away_overs})</div>
                       </div>
                     </div>
                   </div>

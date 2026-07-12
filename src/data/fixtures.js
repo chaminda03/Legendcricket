@@ -11,7 +11,7 @@ const M = (id, group, home, hs, away, as, meta = {}) => ({
   home,
   away,
   date: meta.date || 'Group Stage',
-  venue: meta.venue || 'Legends Oval, Richmond',
+  venue: meta.venue || 'Lake Fairfax Park, Reston, VA',
   status: 'completed',
   result: { home: hs, away: as },
 })

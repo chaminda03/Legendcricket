@@ -3,14 +3,20 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import { SeasonProvider } from './context/SeasonContext.jsx'
+import { FormatProvider } from './context/FormatContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <SeasonProvider>
-        <App />
-      </SeasonProvider>
+      <AuthProvider>
+        <SeasonProvider>
+          <FormatProvider>
+            <App />
+          </FormatProvider>
+        </SeasonProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 )

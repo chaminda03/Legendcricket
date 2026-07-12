@@ -1,38 +1,32 @@
-import { groupStandings, formatNRR } from '../data/standings'
-import { getTeam } from '../data/teams'
+import { formatNRR } from '../data/standings'
 
-// Top 2 of each group qualify for the quarterfinals.
-const QUALIFY = 2
-
-export default function StandingsTable({ year, group }) {
-  const rows = groupStandings(year, group)
-
+// Presentational standings table. Works for any season — pass computed rows and
+// a { teamId: {name, short, color} } lookup.
+//   qualifiedIds  optional Set of team ids currently in the qualification zone;
+//                 when given it drives the highlight (format-aware). Otherwise
+//                 falls back to the first `qualify` rows.
+export default function StandingsTable({ rows = [], teamsById = {}, qualify = 2, qualifiedIds = null }) {
+  const isQualified = (r, i) => (qualifiedIds ? qualifiedIds.has(r.teamId) : i < qualify)
   return (
-    <div className="table-wrap">
+    <div className="table-wrap ladder-full">
       <table className="ladder">
         <thead>
           <tr>
             <th>#</th>
             <th className="team-col">Team</th>
-            <th>P</th>
-            <th>W</th>
-            <th>L</th>
-            <th>T</th>
-            <th>NRR</th>
-            <th>Form</th>
-            <th>Pts</th>
+            <th>P</th><th>W</th><th>L</th><th>T</th><th>NRR</th><th>Form</th><th>Pts</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => {
-            const team = getTeam(r.teamId)
+            const team = teamsById[r.teamId] || {}
             return (
-              <tr key={r.teamId} className={i < QUALIFY ? 'qualify' : ''}>
+              <tr key={r.teamId} className={isQualified(r, i) ? 'qualify' : ''}>
                 <td className="pos">{i + 1}</td>
                 <td className="team-col">
                   <span className="team-cell">
-                    <span className="tb" style={{ background: team.color }}>{team.short}</span>
-                    <span className="tn">{team.name}</span>
+                    <span className="tb" style={{ background: team.color || '#334155' }}>{team.short || '—'}</span>
+                    <span className="tn">{team.name || 'Unknown'}</span>
                   </span>
                 </td>
                 <td>{r.played}</td>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { SQUAD_SIZE } from '../data/fixtures'
-import { submitRegistration, isRegistrationConfigured } from '../lib/registration'
+import { submitRegistration } from '../lib/db'
+import { isSupabaseConfigured } from '../lib/supabase'
 
+const MIN_PLAYERS = 6 // 6 players required; players 7 & 8 are optional substitutes
 const emptyPlayers = () => Array.from({ length: SQUAD_SIZE }, () => '')
 
 const EMPTY = {
@@ -28,19 +30,19 @@ export default function Register() {
     e.preventDefault()
     setError('')
 
-    // Squad rule: exactly 8 players for this 6-a-side tournament.
-    const filled = players.map((p) => p.trim()).filter(Boolean)
-    if (filled.length < SQUAD_SIZE) {
+    // Squad rule: the first 6 players are required; the 2 substitutes are optional.
+    const trimmed = players.map((p) => p.trim())
+    if (!trimmed.slice(0, MIN_PLAYERS).every(Boolean)) {
       setStatus('error')
-      setError(`Please enter all ${SQUAD_SIZE} squad players (6 on the field + 2 substitutes).`)
+      setError(`Please enter your ${MIN_PLAYERS} players. Substitutes are optional.`)
       return
     }
 
-    const payload = { ...form, players: filled.join('\n') }
+    const payload = { ...form, players: trimmed.filter(Boolean).join('\n') }
 
-    if (!isRegistrationConfigured) {
+    if (!isSupabaseConfigured) {
       setStatus('error')
-      setError('The registration sheet is not connected yet. Add your Google Sheets endpoint to the .env file (see README) to start accepting entries.')
+      setError('The registration database is not connected yet. Add your Supabase keys to the .env file (see README) to start accepting entries.')
       return
     }
 
@@ -62,18 +64,18 @@ export default function Register() {
         <div className="section-head">
           <span className="eyebrow">Join the Championship</span>
           <h2>Register Your Team</h2>
-          <p>This is a <strong>6-a-side</strong> tournament — register an <strong>8-player squad</strong> (6 on the field plus 2 substitutes). Our committee will confirm your group by email within 48 hours.</p>
+          <p>This is a <strong>6-a-side</strong> tournament — register your <strong>6 players</strong>, plus up to 2 optional substitutes. Our committee will confirm your group and fixtures.</p>
         </div>
 
         {status === 'success' && (
           <div className="alert success">
-            🎉 <strong>Registration received!</strong> Thank you — your team is in. We'll email you shortly to confirm your group and fixtures.
+            🎉 <strong>Registration received!</strong> Thank you — your team is in. We'll contact you if we need further information.
           </div>
         )}
         {status === 'error' && <div className="alert error">⚠️ {error}</div>}
-        {!isRegistrationConfigured && status === 'idle' && (
+        {!isSupabaseConfigured && status === 'idle' && (
           <div className="alert info">
-            ℹ️ <strong>Setup note (for admins):</strong> connect your Google Sheet (add <code>VITE_SHEETS_ENDPOINT</code> to <code>.env</code>) to start collecting live registrations. See the README.
+            ℹ️ <strong>Setup note (for admins):</strong> connect Supabase (add your keys to <code>.env</code>) to start collecting live registrations. See the README.
           </div>
         )}
 
@@ -112,16 +114,16 @@ export default function Register() {
           </div>
 
           <div className="field">
-            <label>Squad — 8 Players <span className="req">*</span></label>
-            <div className="hint" style={{ marginTop: 0, marginBottom: 12 }}>Players 1–6 take the field; 7 &amp; 8 are your substitutes. Your captain can also be listed here.</div>
+            <label>Squad Players <span className="req">*</span></label>
+            <div className="hint" style={{ marginTop: 0, marginBottom: 12 }}>Enter your {MIN_PLAYERS} players. The 2 substitutes are optional. Your captain can also be listed here.</div>
             <div className="grid grid-2" style={{ gap: 12 }}>
               {players.map((p, i) => (
                 <input
                   key={i}
                   value={p}
                   onChange={(e) => updatePlayer(i, e.target.value)}
-                  placeholder={i < 6 ? `Player ${i + 1}` : `Substitute ${i - 5}`}
-                  required
+                  placeholder={i < MIN_PLAYERS ? `Player ${i + 1}` : `Substitute ${i - MIN_PLAYERS + 1} (optional)`}
+                  required={i < MIN_PLAYERS}
                 />
               ))}
             </div>

@@ -21,6 +21,7 @@ export const SEASONS = {
     year: 2025,
     status: 'completed',
     tagline: 'Champions · Challengers Green',
+    format: 16, // played as 16 teams / 4 groups — drives the knockout seeding
     fixtures: FIXTURES,
     knockoutResults: {
       QF1: 'va-legends-red', QF2: 'jolly-boys-red',
@@ -39,7 +40,23 @@ export const SEASONS = {
 // Newest first — drives the dropdown order.
 export const SEASON_YEARS = [2026, 2025]
 export const CURRENT_SEASON = 2026
-export const LAST_COMPLETED_SEASON = 2025
+
+// The home page showcases the last COMPLETED season. This rolls over on its own:
+// the 2026 carnival is played Aug 1 2026, so from Aug 2 2026 the site treats 2026
+// as complete and the home page's standings/results switch from 2025 to 2026 with
+// no redeploy. Add future rollovers here as new seasons are added.
+const SEASON_ROLLOVERS = [
+  { from: '2026-08-02T00:00:00', season: 2026 },
+]
+function computeLastCompletedSeason() {
+  const now = new Date()
+  let latest = 2025 // the most recent season already completed today
+  for (const r of SEASON_ROLLOVERS) {
+    if (now >= new Date(r.from)) latest = r.season
+  }
+  return latest
+}
+export const LAST_COMPLETED_SEASON = computeLastCompletedSeason()
 
 export const getSeason = (year) => SEASONS[year] || SEASONS[CURRENT_SEASON]
 export const hasResults = (year) => getSeason(year).fixtures.length > 0

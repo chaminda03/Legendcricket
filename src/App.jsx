@@ -1,13 +1,17 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import PointsTable from './pages/PointsTable'
 import Knockouts from './pages/Knockouts'
 import Fixtures from './pages/Fixtures'
 import Teams from './pages/Teams'
 import Register from './pages/Register'
-import Admin from './pages/Admin'
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminLayout from './pages/admin/AdminLayout'
+import AdminTeams from './pages/admin/AdminTeams'
+import AdminMatches from './pages/admin/AdminMatches'
 
 export default function App() {
   return (
@@ -21,7 +25,11 @@ export default function App() {
           <Route path="/fixtures" element={<Fixtures />} />
           <Route path="/teams" element={<Teams />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminTeams />} />
+            <Route path="matches" element={<AdminMatches />} />
+          </Route>
         </Routes>
       </main>
       <Footer />

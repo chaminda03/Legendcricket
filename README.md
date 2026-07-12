@@ -3,7 +3,7 @@
 A modern, Big Bash–inspired website for the annual Virginia Legends **6-a-side** Championship.
 16 teams · 4 groups · **5 overs a side** · live points table · knockout bracket · team registration.
 
-Built with **React + Vite**, with team registrations saved to **Google Sheets**.
+Built with **React + Vite**, with registrations + a committee admin panel on **Supabase**.
 
 ---
 
@@ -16,8 +16,8 @@ Built with **React + Vite**, with team registrations saved to **Google Sheets**.
 | **Knockouts** | Qualified-team seeding + full quarterfinal → semifinal → grand-final bracket |
 | **Fixtures** | Full round-robin schedule with scorelines; filter by group / results |
 | **Teams** | All 16 teams grouped A–D with colours |
-| **Register** | 8-player squad registration form → saved to your Google Sheet |
-| **Admin** (`/admin`) | Committee view of all registrations + CSV export (also live in the Sheet) |
+| **Register** | 8-player squad registration form → saved to Supabase (as a pending team) |
+| **Admin** (`/admin`) | Login-protected committee panel: approve teams + run the group draw |
 
 ---
 
@@ -86,45 +86,49 @@ npm run dev
 ```
 
 The site opens at **http://localhost:5173**. It works immediately — the only
-part that needs setup is **saving registrations**, which uses Google Sheets (below).
+part that needs setup is **registrations + the admin panel**, which use Supabase (below).
 
 ---
 
-## 🗄️ Connect registrations to Google Sheets — ~5 minutes
+## 🗄️ Connect Supabase (registrations + admin panel) — ~10 minutes
 
-Team registrations land as rows in a Google Sheet you own. The site's branded
-form posts to a tiny Google Apps Script; the committee just watches entries
-arrive in the spreadsheet.
+Registrations are saved to a free Supabase database, and the committee manages
+everything from a login-protected admin panel.
 
-1. **Create a Google Sheet** — go to [sheet.new](https://sheet.new) (any name).
-2. **Open the script editor** — in that sheet: **Extensions → Apps Script**.
-3. **Paste the script** — delete the sample code, paste all of
-   [`google-apps-script.gs`](./google-apps-script.gs), and **Save**.
-4. **Deploy** — **Deploy → New deployment → Web app**:
-   - *Execute as:* **Me**
-   - *Who has access:* **Anyone**
-
-   Click **Deploy**, then **Authorize access**. Copy the **Web app URL** (ends in `/exec`).
-5. **Add it to the app** — copy `.env.example` to `.env` and paste:
+1. **Create a project** at [supabase.com](https://supabase.com) → *New project*
+   (any name / region). Wait for it to finish provisioning.
+2. **Create the tables** — in the project: **SQL Editor → New query**, paste the
+   contents of [`supabase-schema.sql`](./supabase-schema.sql), and click **Run**.
+3. **Get your keys** — **Project Settings → API**, copy the *Project URL* and the
+   *anon / public* key.
+4. **Add them to the app** — copy `.env.example` to `.env` and fill in:
    ```
-   VITE_SHEETS_ENDPOINT=https://script.google.com/macros/s/XXXX/exec
+   VITE_SUPABASE_URL=https://xxxxxxxx.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
    ```
-6. **Restart** the dev server. Submit a test team on `/register` — it appears in
-   your Google Sheet, and on the `/admin` page. 🎉
+5. **Create a committee login** — **Authentication → Users → Add user**, enter an
+   email + password and tick **Auto Confirm User**. Add one per committee member.
+6. **Restart** the dev server (`npm run dev`).
+   - Submit a test team on `/register`.
+   - Log in at **`/admin/login`** with the user from step 5.
+   - On **`/admin`** you'll see the team — approve it and assign a group. 🎉
 
-> Until you do this, the form shows a friendly "not connected" note and the rest
-> of the site works normally. The `google-apps-script.gs` file has the same steps
-> in its header comment.
+> Until you connect Supabase, the registration form and admin panel show a
+> friendly "not connected" note; the rest of the site works normally.
+
+**Security:** Row Level Security is enabled in the schema. The public (anon key)
+can only *submit* a registration and *read approved* teams; only logged-in
+committee members can approve teams, run the draw, and edit results.
 
 ---
 
-## 🔒 A note on privacy
+## 🛠️ The admin panel (`/admin`)
 
-The web app is deployed as **Anyone** so the public form can submit without a
-login. The `/admin` page reads the same endpoint, so treat its URL as semi-public.
-For a club tournament that's usually fine. To lock it down, you can remove the
-`doGet` function from the script (then manage entries **only** in the Google Sheet,
-which stays private to your Google account) — the form will still work.
+- **Login** at `/admin/login` (Supabase Auth — committee accounts only).
+- **Teams & Draw** — see every registration, approve/reject, and assign each
+  approved team to Group A–D. The draw drives the public points table & bracket.
+- *Coming in Phase 2:* auto-generate fixtures, enter match scores, and manage the
+  knockout bracket — all from the panel.
 
 ---
 
@@ -149,8 +153,9 @@ npm run build     # outputs to /dist
 ```
 
 Deploy the `dist` folder to any static host — **Netlify**, **Vercel**, **GitHub
-Pages**, or **Cloudflare Pages**. On Netlify/Vercel, set the `VITE_SHEETS_ENDPOINT`
-environment variable in the dashboard so registrations work in production.
+Pages**, or **Cloudflare Pages**. On Netlify/Vercel, set the `VITE_SUPABASE_URL`
+and `VITE_SUPABASE_ANON_KEY` environment variables in the dashboard so
+registrations + the admin panel work in production.
 
 Because the app uses client-side routing, add a redirect so deep links work:
 
