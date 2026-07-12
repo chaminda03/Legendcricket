@@ -9,7 +9,8 @@ export const SLIDES = [
     title: 'Where the DMV Comes to Play',
     text: 'A community of cricketers bringing competitive, fast-paced cricket to Virginia, Maryland and DC — one big weekend a year.',
     cta: null,
-    image: '/images/va-legends-squad.jpg',
+    image: '/images/legends-winners-enhanced.jpg',
+    focus: 'center 38%', // pull the crop up slightly so heads aren't cut off
     gradient: 'g1',
   },
   {
@@ -17,7 +18,7 @@ export const SLIDES = [
     eyebrow: '15th Annual Cricket Carnival',
     title: '16 Teams · 4 Groups · 6-a-Side',
     text: 'Five overs of pure chaos. Round-robin groups, knockout brackets, and one team lifting the Legends trophy.',
-    cta: { label: 'View the Format', to: '/knockouts' },
+    cta: null,
     image: '/images/va-legends-team-enhanced.jpg',
     gradient: 'g2',
   },
@@ -26,8 +27,9 @@ export const SLIDES = [
     eyebrow: 'Season 2026',
     title: 'Registration Is Now Open',
     text: 'Gather your squad of eight and claim your place at the biggest cricket carnival in the DMV.',
-    cta: { label: 'Enter Your Team', to: '/register' },
-    image: '/images/legends-winners-enhanced.jpg',
+    cta: null,
+    image: '/images/va-legends-squad.jpg',
+    focus: 'center 68%', // players sit low in this frame — crop down onto them
     gradient: 'g3',
   },
 ]

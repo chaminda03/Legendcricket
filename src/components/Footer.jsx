@@ -31,6 +31,7 @@ export default function Footer() {
               <li><Link to="/knockouts">Knockout Bracket</Link></li>
               <li><Link to="/fixtures">Fixtures &amp; Results</Link></li>
               <li><Link to="/teams">Teams</Link></li>
+              <li><Link to="/rules">Tournament Rules</Link></li>
               <li><Link to="/register">Register a Team</Link></li>
             </ul>
           </div>

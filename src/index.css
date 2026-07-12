@@ -676,3 +676,39 @@ h1, h2, h3, h4 {
   .brand-text .t1 { font-size: 1.02rem; }
   .brand-text .t2 { font-size: 0.65rem; }
 }
+
+/* ---------- Rules page ---------- */
+.rules-doc { max-width: 880px; }
+.rules-preamble {
+  font-size: 1.06rem; line-height: 1.7; color: var(--text);
+  border-left: 3px solid var(--primary); padding-left: 18px; margin: 8px 0 10px;
+}
+.rules-section { margin-top: 34px; }
+.rules-section > h3 {
+  font-family: var(--head); font-size: 1.35rem; color: var(--text);
+  padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.rules-section > .muted { margin-bottom: 16px; line-height: 1.6; }
+.rule-list { padding-left: 1.7rem; margin: 8px 0; }
+.rule-list li { margin: 7px 0; line-height: 1.62; color: var(--text); }
+.rule-list .rule-list { margin-top: 8px; margin-bottom: 4px; }
+.rule-list a { color: var(--primary); }
+.rule-note { color: var(--muted); font-size: 0.92rem; line-height: 1.55; margin: 6px 0 2px; }
+
+.super8-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; margin-top: 8px;
+}
+.super8-card { padding: 20px; }
+.super8-card h4 { font-family: var(--head); font-size: 1.25rem; color: var(--primary); }
+.super8-card .s8-sub {
+  color: var(--muted); font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; margin: 2px 0 12px;
+}
+.super8-card ul { list-style: none; display: grid; gap: 10px; }
+.super8-card li { font-size: 0.92rem; line-height: 1.55; color: var(--text); }
+.super8-card li strong { color: var(--text); }
+
+.rules-disclaimer {
+  margin-top: 34px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--muted); font-size: 0.9rem; line-height: 1.6;
+}
+.rules-disclaimer strong { color: var(--text); }

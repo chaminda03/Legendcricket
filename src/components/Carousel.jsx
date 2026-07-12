@@ -27,7 +27,7 @@ export default function Carousel({ slides, interval = 6000 }) {
       {slides.map((s, i) => (
         <div key={s.id} className={`carousel-slide ${i === index ? 'active' : ''}`} aria-hidden={i !== index}>
           {s.image
-            ? <img className="carousel-img" src={s.image} alt={s.title} />
+            ? <img className="carousel-img" src={s.image} alt={s.title} style={s.focus ? { objectPosition: s.focus } : undefined} />
             : <div className={`carousel-ph ph-${s.gradient}`} />}
           <div className="carousel-overlay" />
           <div className="container carousel-content">

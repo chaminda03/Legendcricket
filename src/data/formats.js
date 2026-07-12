@@ -53,3 +53,21 @@ export const qualifyDescription = (f) =>
   f.qualify === 'pure-pool'
     ? 'The top eight teams overall — across every group — advance to the Super 8 knockouts.'
     : 'Every group winner plus the best runners-up advance to the Super 8 knockouts.'
+
+// Group matches each team plays: a numeric cap, or (full round-robin) one fewer
+// than the group size.
+export const matchesPerTeamCount = (f) =>
+  f.matchesPerTeam === 'all' ? f.perGroup - 1 : f.matchesPerTeam
+
+// One-sentence Super 8 qualification rule, derived from the format so the Rules
+// page never hardcodes it.
+export const super8Rule = (f) => {
+  if (f.qualify === 'pure-pool') {
+    return `No automatic group berths — the 8 highest-ranked teams across all ${f.groups.length} groups qualify, ranked by points, then Net Run-Rate.`
+  }
+  const runnersUp = 8 - f.groups.length
+  if (runnersUp === f.groups.length) {
+    return `The top 2 teams from each of the ${f.groups.length} groups qualify — ${f.groups.length * 2} teams in total.`
+  }
+  return `Each of the ${f.groups.length} group winners qualifies automatically, joined by the ${runnersUp} best runners-up (ranked across the groups by points, then Net Run-Rate).`
+}

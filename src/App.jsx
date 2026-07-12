@@ -7,6 +7,7 @@ import PointsTable from './pages/PointsTable'
 import Knockouts from './pages/Knockouts'
 import Fixtures from './pages/Fixtures'
 import Teams from './pages/Teams'
+import Rules from './pages/Rules'
 import Register from './pages/Register'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminLayout from './pages/admin/AdminLayout'
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/knockouts" element={<Knockouts />} />
           <Route path="/fixtures" element={<Fixtures />} />
           <Route path="/teams" element={<Teams />} />
+          <Route path="/rules" element={<Rules />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
