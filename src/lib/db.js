@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { CURRENT_SEASON } from '../data/seasons'
+import { DEFAULT_TEMPLATES } from '../data/messageTemplates'
 
 // ---- Registrations / teams -------------------------------------------------
 
@@ -170,4 +171,51 @@ export async function saveKnockoutScore(season, code, homeId, awayId, score) {
 export async function clearKnockouts(season = CURRENT_SEASON) {
   const { error } = await supabase.from('matches').delete().eq('season', season).eq('stage', 'knockout')
   if (error) throw new Error(error.message)
+}
+
+// ---- Messaging (SMS) -------------------------------------------------------
+
+export async function fetchMessagingSettings() {
+  const { data, error } = await supabase.from('messaging_settings').select('*').eq('id', 1).maybeSingle()
+  if (error) throw new Error(error.message)
+  return data || { id: 1, enabled: false, test_mode: true, test_number: '' }
+}
+
+export async function updateMessagingSettings(patch) {
+  const { error } = await supabase.from('messaging_settings').update(patch).eq('id', 1)
+  if (error) throw new Error(error.message)
+}
+
+// Fetch templates, seeding the table from the app defaults on first use.
+export async function fetchTemplates() {
+  let { data, error } = await supabase.from('message_templates').select('*').order('sort', { ascending: true })
+  if (error) throw new Error(error.message)
+  if (!data || data.length === 0) {
+    const rows = DEFAULT_TEMPLATES.map(({ key, label, body, sort }) => ({ key, label, body, sort, enabled: true }))
+    const { error: seedErr } = await supabase.from('message_templates').insert(rows)
+    if (seedErr) throw new Error(seedErr.message)
+    ;({ data, error } = await supabase.from('message_templates').select('*').order('sort', { ascending: true }))
+    if (error) throw new Error(error.message)
+  }
+  return data || []
+}
+
+export async function updateTemplate(key, patch) {
+  const { error } = await supabase.from('message_templates').update(patch).eq('key', key)
+  if (error) throw new Error(error.message)
+}
+
+export async function fetchMessageLog(limit = 50) {
+  const { data, error } = await supabase
+    .from('message_log').select('*')
+    .order('created_at', { ascending: false }).limit(limit)
+  if (error) throw new Error(error.message)
+  return data || []
+}
+
+// Invoke the send-sms Edge Function. Returns { sent, failed, skipped, redirected, results }.
+export async function sendSms({ test = false, season = CURRENT_SEASON, messages }) {
+  const { data, error } = await supabase.functions.invoke('send-sms', { body: { test, season, messages } })
+  if (error) throw new Error(error.message)
+  return data
 }

@@ -712,3 +712,31 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-sm); color: var(--muted); font-size: 0.9rem; line-height: 1.6;
 }
 .rules-disclaimer strong { color: var(--text); }
+
+/* ---------- Admin messaging ---------- */
+.alert.ok { background: rgba(198, 255, 61, 0.1); border: 1px solid var(--primary); color: var(--text); padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px; }
+.msg-panel {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 18px; margin-bottom: 22px;
+}
+.msg-test-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.switch-row { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+.switch-row input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch-pill { width: 42px; height: 24px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--border); position: relative; transition: background 0.15s; flex-shrink: 0; }
+.switch-pill .knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--muted); transition: transform 0.15s, background 0.15s; }
+.switch-pill.on { background: var(--primary); }
+.switch-pill.on .knob { transform: translateX(18px); background: #0a1030; }
+.switch-pill.sm { width: 34px; height: 20px; } .switch-pill.sm .knob { width: 14px; height: 14px; } .switch-pill.sm.on .knob { transform: translateX(14px); }
+.switch-label { font-size: 0.95rem; }
+.msg-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.msg-inline { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.msg-template { border-top: 1px solid var(--border); padding: 12px 0; }
+.msg-template-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.msg-template .tier-tag { font-size: 0.78rem; font-family: var(--head); }
+.msg-textarea {
+  width: 100%; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); padding: 10px 12px; font: inherit; font-size: 0.9rem; line-height: 1.5; resize: vertical;
+}
+.msg-textarea:focus { outline: 0; border-color: var(--primary); }
+@media (max-width: 720px) { .msg-panel { grid-template-columns: 1fr; } }

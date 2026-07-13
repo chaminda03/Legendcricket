@@ -45,6 +45,7 @@ export default function AdminLayout() {
         <div className="admin-nav">
           <NavLink end to="/admin">Teams &amp; Draw</NavLink>
           <NavLink to="/admin/matches">Fixtures &amp; Scores</NavLink>
+          <NavLink to="/admin/messaging">Messaging</NavLink>
         </div>
 
         <Outlet />
