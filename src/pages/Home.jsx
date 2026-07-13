@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import StandingsTable from '../components/StandingsTable'
 import Carousel from '../components/Carousel'
-import { LAST_COMPLETED_SEASON } from '../data/seasons'
+import { CURRENT_SEASON, LAST_COMPLETED_SEASON, editionForSeason, ordinal } from '../data/seasons'
+import { useFormat } from '../context/FormatContext'
 import { useSeasonData } from '../hooks/useSeasonData'
 import { standingsByGroup, indexById } from '../data/compute'
 import { SLIDES, VALUES, GALLERY, ABOUT_IMAGE } from '../data/home'
@@ -14,15 +15,25 @@ const features = [
 ]
 
 export default function Home() {
+  const { format } = useFormat()
   const { teams, matches } = useSeasonData(LAST_COMPLETED_SEASON)
   const teamsById = indexById(teams)
   const groupA = standingsByGroup(teams, matches)['A'] || []
   const recent = matches.filter((m) => m.status === 'completed').slice(-3).reverse()
 
+  // Carnival edition + format line advance with the season / active format —
+  // never hardcoded. Injected into the 'format' carousel slide.
+  const edition = editionForSeason(CURRENT_SEASON)
+  const carnivalName = `${ordinal(edition)} Annual Cricket Carnival`
+  const formatLine = `${format.size} Teams · ${format.groups.length} Groups · 6-a-Side`
+  const slides = SLIDES.map((s) =>
+    s.id === 'format' ? { ...s, eyebrow: carnivalName, title: formatLine } : s,
+  )
+
   return (
     <>
       {/* CAROUSEL */}
-      <Carousel slides={SLIDES} />
+      <Carousel slides={slides} />
 
       {/* ABOUT */}
       <section className="section">
@@ -33,10 +44,10 @@ export default function Home() {
               <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', margin: '10px 0 16px' }}>About Virginia Legends</h2>
               <div className="fact-chips">
                 <span className="fact-chip">🗓️ Founded 2008</span>
-                <span className="fact-chip">🎪 15th Annual Cricket Carnival</span>
+                <span className="fact-chip">🎪 {carnivalName}</span>
                 <span className="fact-chip">📍 Open to VA · MD · DC</span>
               </div>
-              <p>Founded in 2008, Virginia Legends Cricket Club was born from a simple love of the game and a group of friends who wanted to bring the community together on the pitch. What started as weekend games has grown into the region's most anticipated cricket weekend — and this year we celebrate our <strong>15th Annual Cricket Carnival</strong>.</p>
+              <p>Founded in 2008, Virginia Legends Cricket Club was born from a simple love of the game and a group of friends who wanted to bring the community together on the pitch. What started as weekend games has grown into the region's most anticipated cricket weekend — and this year we celebrate our <strong>{carnivalName}</strong>.</p>
               <p>Every year, sixteen teams from across <strong>Virginia, Maryland and DC</strong> go head-to-head in our fast-paced 6-a-side championship — five overs a side, big hitting, and plenty of heart. It's competitive, it's welcoming, and above all, it's a celebration of cricket and the people who play it.</p>
               <p>Whether you're a seasoned all-rounder or picking up a bat for the first time, there's a place for you in the Legends family.</p>
               <Link to="/register" className="btn btn-primary" style={{ marginTop: 8 }}>Join the Legends →</Link>

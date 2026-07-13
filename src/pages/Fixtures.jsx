@@ -4,7 +4,6 @@ import SeasonEmpty from '../components/SeasonEmpty'
 import { useSeason } from '../context/SeasonContext'
 import { useSeasonData } from '../hooks/useSeasonData'
 import { indexById } from '../data/compute'
-import { GROUPS } from '../data/teams'
 
 function MatchCard({ m, teamsById }) {
   const h = teamsById[m.home_team] || {}
@@ -52,7 +51,12 @@ export default function Fixtures() {
   const { matches, teams, loading } = useSeasonData(season)
   const teamsById = indexById(teams)
 
-  const filtered = matches.filter((m) => {
+  // Group-stage only — knockout matches are shown on the Knockouts bracket page.
+  // Group tabs are derived from the draw so any number of groups renders.
+  const groupMatches = matches.filter((m) => m.stage !== 'knockout' && m.grp)
+  const groups = [...new Set(groupMatches.map((m) => m.grp))].sort()
+
+  const filtered = groupMatches.filter((m) => {
     if (filter === 'all') return true
     if (filter === 'completed') return m.status === 'completed'
     return m.grp === filter
@@ -71,14 +75,14 @@ export default function Fixtures() {
 
         {loading ? (
           <div className="empty">Loading fixtures…</div>
-        ) : matches.length === 0 ? (
+        ) : groupMatches.length === 0 ? (
           <SeasonEmpty year={season} what="The full fixture list" />
         ) : (
           <>
             <div className="tabs">
               <button className={`tab ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All</button>
               <button className={`tab ${filter === 'completed' ? 'active' : ''}`} onClick={() => setFilter('completed')}>Results</button>
-              {GROUPS.map((g) => (
+              {groups.map((g) => (
                 <button key={g} className={`tab ${filter === g ? 'active' : ''}`} onClick={() => setFilter(g)}>Grp {g}</button>
               ))}
             </div>

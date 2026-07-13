@@ -2,7 +2,6 @@ import SeasonSelect from '../components/SeasonSelect'
 import SeasonEmpty from '../components/SeasonEmpty'
 import { useSeason } from '../context/SeasonContext'
 import { useSeasonData } from '../hooks/useSeasonData'
-import { GROUPS } from '../data/teams'
 
 // Fallback short code from a team name if the committee hasn't set one.
 const initials = (name = '') =>
@@ -12,9 +11,12 @@ export default function Teams() {
   const { season } = useSeason()
   const { teams, loading } = useSeasonData(season)
 
+  // Sections are derived from the actual draw, so any number of groups (A–E…)
+  // renders correctly; ungrouped teams fall under "Awaiting Draw".
   const byGroup = {}
   teams.forEach((t) => { const g = t.grp || 'TBD'; (byGroup[g] ||= []).push(t) })
-  const sections = [...GROUPS.filter((g) => byGroup[g]), ...(byGroup.TBD ? ['TBD'] : [])]
+  const groupKeys = Object.keys(byGroup).filter((g) => g !== 'TBD').sort()
+  const sections = [...groupKeys, ...(byGroup.TBD ? ['TBD'] : [])]
 
   return (
     <section className="section">

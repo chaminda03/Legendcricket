@@ -15,8 +15,10 @@ export const SLIDES = [
   },
   {
     id: 'format',
-    eyebrow: '15th Annual Cricket Carnival',
-    title: '16 Teams · 4 Groups · 6-a-Side',
+    // eyebrow (carnival edition) + title (team/group counts) are injected in
+    // Home.jsx from the season + active format, so they advance automatically.
+    eyebrow: 'Annual Cricket Carnival',
+    title: 'Six-a-Side Championship',
     text: 'Five overs of pure chaos. Round-robin groups, knockout brackets, and one team lifting the Legends trophy.',
     cta: null,
     image: '/images/va-legends-team-enhanced.jpg',

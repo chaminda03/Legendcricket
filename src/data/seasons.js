@@ -58,6 +58,17 @@ function computeLastCompletedSeason() {
 }
 export const LAST_COMPLETED_SEASON = computeLastCompletedSeason()
 
+// Annual carnival edition. The 2026 (CURRENT_SEASON) carnival is the 15th; the
+// number advances automatically with the season, so nothing is hardcoded in the UI.
+export const CURRENT_EDITION = 15
+export const editionForSeason = (year) => CURRENT_EDITION + (year - CURRENT_SEASON)
+
+// "15th", "21st", "22nd", "23rd" …
+export const ordinal = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100
+  return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`
+}
+
 export const getSeason = (year) => SEASONS[year] || SEASONS[CURRENT_SEASON]
 export const hasResults = (year) => getSeason(year).fixtures.length > 0
 
