@@ -13,6 +13,7 @@ export default function AdminTeams() {
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
   const [savingId, setSavingId] = useState(null)
+  const [filter, setFilter] = useState('all')
 
   const load = async () => {
     try { setTeams(await fetchAllTeams(CURRENT_SEASON)); setStatus('ready') }
@@ -40,6 +41,15 @@ export default function AdminTeams() {
   const pending = teams.filter((t) => t.status === 'pending')
   const groupCount = (g) => approved.filter((t) => t.grp === g).length
 
+  const visibleTeams = teams.filter((t) => {
+    if (filter === 'all') return true
+    if (filter === 'pending') return t.status === 'pending'
+    if (filter === 'approved') return t.status === 'approved'
+    if (filter.startsWith('group:')) return t.status === 'approved' && t.grp === filter.slice(6)
+    return true
+  })
+  const toggle = (key) => setFilter((f) => (f === key ? 'all' : key))
+
   if (status === 'loading') return <div className="empty">Loading teams…</div>
   if (status === 'error') return <div className="alert error">⚠️ {error}</div>
 
@@ -48,21 +58,35 @@ export default function AdminTeams() {
       {error && <div className="alert error">⚠️ {error} <button className="linklike" onClick={() => setError('')}>dismiss</button></div>}
 
       <div className="admin-stats">
-        <div className="admin-stat"><div className="n">{teams.length}</div><div className="l">Registered</div></div>
-        <div className="admin-stat"><div className="n" style={{ color: 'var(--gold)' }}>{pending.length}</div><div className="l">Pending</div></div>
-        <div className="admin-stat"><div className="n" style={{ color: 'var(--primary)' }}>{approved.length}/{format.size}</div><div className="l">Approved</div></div>
+        <button type="button" className={`admin-stat${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
+          <div className="n">{teams.length}</div><div className="l">Registered</div>
+        </button>
+        <button type="button" className={`admin-stat${filter === 'pending' ? ' active' : ''}`} onClick={() => toggle('pending')}>
+          <div className="n" style={{ color: 'var(--gold)' }}>{pending.length}</div><div className="l">Pending</div>
+        </button>
+        <button type="button" className={`admin-stat${filter === 'approved' ? ' active' : ''}`} onClick={() => toggle('approved')}>
+          <div className="n" style={{ color: 'var(--primary)' }}>{approved.length}/{format.size}</div><div className="l">Approved</div>
+        </button>
         {GROUPS.map((g) => (
-          <div key={g} className="admin-stat">
+          <button type="button" key={g} className={`admin-stat${filter === `group:${g}` ? ' active' : ''}`} onClick={() => toggle(`group:${g}`)}>
             <div className="n" style={{ color: groupCount(g) > GROUP_LIMIT ? 'var(--secondary)' : 'var(--text)' }}>{groupCount(g)}/{GROUP_LIMIT}</div>
             <div className="l">Group {g}</div>
-          </div>
+          </button>
         ))}
       </div>
 
       {teams.length === 0 ? (
         <div className="empty">No registrations yet. Share the <Link to="/register" style={{ color: 'var(--primary)' }}>registration link</Link> to get teams signed up! 🏏</div>
+      ) : visibleTeams.length === 0 ? (
+        <div className="empty">No teams match this filter. <button className="linklike" onClick={() => setFilter('all')}>Show all</button></div>
       ) : (
         <div className="table-wrap">
+          {filter !== 'all' && (
+            <p className="muted" style={{ margin: '0 0 10px', fontSize: '0.88rem' }}>
+              Showing {visibleTeams.length} {filter === 'pending' ? 'pending' : filter === 'approved' ? 'approved' : `Group ${filter.slice(6)}`} {visibleTeams.length === 1 ? 'team' : 'teams'}.
+              {' '}<button className="linklike" onClick={() => setFilter('all')}>Clear filter</button>
+            </p>
+          )}
           <table className="reg-table admin-table">
             <thead>
               <tr>
@@ -70,7 +94,7 @@ export default function AdminTeams() {
               </tr>
             </thead>
             <tbody>
-              {teams.map((t) => (
+              {visibleTeams.map((t) => (
                 <tr key={t.id} className={savingId === t.id ? 'saving' : ''}>
                   <td className="team">
                     {t.name}

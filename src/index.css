@@ -538,7 +538,10 @@ h1, h2, h3, h4 {
 .fmt-btn:hover { color: var(--text); }
 .fmt-btn.active { background: var(--primary); color: #0a1030; }
 .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 26px; }
-.admin-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+.admin-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; font: inherit; color: inherit; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.05s; }
+.admin-stat:hover { border-color: var(--primary); }
+.admin-stat:active { transform: translateY(1px); }
+.admin-stat.active { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary) inset; }
 .admin-stat .n { font-family: var(--head); font-weight: 800; font-size: 1.9rem; line-height: 1; }
 .admin-stat .l { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px; }
 .admin-table tr.saving { opacity: 0.55; }
