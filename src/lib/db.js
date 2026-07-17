@@ -186,13 +186,18 @@ export async function updateMessagingSettings(patch) {
   if (error) throw new Error(error.message)
 }
 
-// Fetch templates, seeding the table from the app defaults on first use.
+// Fetch templates, seeding the table from the app defaults on first use and
+// backfilling any default keys added in later releases (the table seeds once, so
+// new defaults wouldn't otherwise appear for existing tournaments).
 export async function fetchTemplates() {
+  const asRow = ({ key, label, body, sort }) => ({ key, label, body, sort, enabled: true })
   let { data, error } = await supabase.from('message_templates').select('*').order('sort', { ascending: true })
   if (error) throw new Error(error.message)
-  if (!data || data.length === 0) {
-    const rows = DEFAULT_TEMPLATES.map(({ key, label, body, sort }) => ({ key, label, body, sort, enabled: true }))
-    const { error: seedErr } = await supabase.from('message_templates').insert(rows)
+
+  const existing = new Set((data || []).map((t) => t.key))
+  const missing = DEFAULT_TEMPLATES.filter((t) => !existing.has(t.key)).map(asRow)
+  if (missing.length > 0) {
+    const { error: seedErr } = await supabase.from('message_templates').insert(missing)
     if (seedErr) throw new Error(seedErr.message)
     ;({ data, error } = await supabase.from('message_templates').select('*').order('sort', { ascending: true }))
     if (error) throw new Error(error.message)

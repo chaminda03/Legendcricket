@@ -6,6 +6,10 @@
 // ============================================================================
 
 export const DEFAULT_TEMPLATES = [
+  { key: 'registration_ack', label: 'Registration received', tier: 1, sort: 5,
+    vars: ['name', 'team', 'edition', 'url'],
+    body: `Hi {name}, we've received {team}'s registration for the {edition} VA Legends Cricket Carnival. Our committee will confirm your group & fixtures soon. Details: {url}` },
+
   { key: 'onboarding', label: 'Approved + group draw', tier: 1, sort: 10,
     vars: ['captain', 'team', 'group', 'edition', 'url'],
     body: `Hi {captain}, {team} is confirmed for the {edition} VA Legends Cricket Carnival — you're in Group {group}. Report by 8 AM. Fixtures: {url}` },

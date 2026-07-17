@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { SQUAD_SIZE } from '../data/fixtures'
-import { submitRegistration } from '../lib/db'
+import { submitRegistration, sendSms } from '../lib/db'
 import { isSupabaseConfigured } from '../lib/supabase'
+import { registrationMessages } from '../lib/messaging'
+import { DEFAULT_TEMPLATES, templateByKey } from '../data/messageTemplates'
 
 const MIN_PLAYERS = 6 // 6 players required; players 7 & 8 are optional substitutes
 const emptyPlayers = () => Array.from({ length: SQUAD_SIZE }, () => '')
@@ -50,6 +52,15 @@ export default function Register() {
     try {
       await submitRegistration(payload)
       setStatus('success')
+      // Best-effort confirmation SMS to the captain + vice-captain. The Edge
+      // Function enforces the master ON/OFF switch and test mode, so this only
+      // sends when messaging is live; a failure here must never fail the
+      // registration the user just completed.
+      try {
+        const tpl = templateByKey(DEFAULT_TEMPLATES).registration_ack
+        const messages = registrationMessages(tpl, payload)
+        if (messages.length) await sendSms({ messages })
+      } catch { /* confirmation SMS is non-critical — ignore */ }
       setForm(EMPTY)
       setPlayers(emptyPlayers())
     } catch (err) {

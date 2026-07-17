@@ -39,6 +39,27 @@ export function broadcastMessages(tpl, teams, extraVars = {}, { requireGroup = f
     })
 }
 
+// Registration acknowledgement — one message each to the captain and the
+// vice-captain of a freshly submitted team. `form` is the registration payload
+// (team_name, captain_name/phone, vice_captain_name/phone). Recipients without a
+// phone are skipped, so this returns 0–2 messages.
+export function registrationMessages(tpl, form) {
+  if (!tpl) return []
+  const { edition, url } = ctx()
+  const recipients = [
+    { name: form.captain_name, phone: form.captain_phone },
+    { name: form.vice_captain_name, phone: form.vice_captain_phone },
+  ]
+  return recipients
+    .filter((r) => r.phone)
+    .map((r) => ({
+      to: normalizePhone(r.phone),
+      name: r.name,
+      body: renderTemplate(tpl.body, { name: r.name, team: form.team_name, edition, url }),
+      template_key: tpl.key,
+    }))
+}
+
 // Qualified teams get their seed + QF opponent; teams that played but missed out
 // get the group-stage-exit note.
 export function qualificationMessages(byKey, teams, matches, format) {
