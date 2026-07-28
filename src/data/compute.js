@@ -49,7 +49,7 @@ function blankRow(team) {
     teamId: team.id, grp: team.grp,
     played: 0, won: 0, lost: 0, tied: 0, points: 0,
     runsFor: 0, oversFor: 0, runsAgainst: 0, oversAgainst: 0,
-    nrr: 0, form: [],
+    nrr: 0, wicketsLost: 0, arpw: 0, form: [],
   }
 }
 
@@ -67,9 +67,9 @@ export function computeRows(teams, matches) {
     const aOv = creditedOvers(m.away_runs, m.away_wkts, m.away_overs)
 
     h.played++; a.played++
-    h.runsFor += m.home_runs; h.oversFor += hOv
+    h.runsFor += m.home_runs; h.oversFor += hOv; h.wicketsLost += Number(m.home_wkts) || 0
     h.runsAgainst += m.away_runs; h.oversAgainst += aOv
-    a.runsFor += m.away_runs; a.oversFor += aOv
+    a.runsFor += m.away_runs; a.oversFor += aOv; a.wicketsLost += Number(m.away_wkts) || 0
     a.runsAgainst += m.home_runs; a.oversAgainst += hOv
 
     if (m.home_runs > m.away_runs) {
@@ -86,6 +86,9 @@ export function computeRows(teams, matches) {
     const rrFor = r.oversFor > 0 ? r.runsFor / r.oversFor : 0
     const rrAgainst = r.oversAgainst > 0 ? r.runsAgainst / r.oversAgainst : 0
     r.nrr = rrFor - rrAgainst
+    // ARPW: a side that never lost a wicket has no meaningful average, so its
+    // total runs stand in. Mirrors averageRunsPerWicket() in standings.js.
+    r.arpw = r.wicketsLost > 0 ? r.runsFor / r.wicketsLost : r.runsFor
   })
   return rows
 }
@@ -113,10 +116,13 @@ export function standingsByGroup(teams, matches) {
 //  Knockouts page and the admin panel can build the bracket from Supabase data.
 
 const SUPER8_SIZE = 8
-const bySeedRank = (a, b) => b.points - a.points || b.nrr - a.nrr || b.won - a.won
+// Points -> NRR -> ARPW, per the official tie-breakers (Wins is a final
+// fallback so the sort stays deterministic when even ARPW is level).
+const bySeedRank = (a, b) =>
+  b.points - a.points || b.nrr - a.nrr || b.arpw - a.arpw || b.won - a.won
 
 // The 8 qualifiers, seeded 1..8, per the format's `qualify` rule.
-//   'pure-pool'          -> top 8 overall by Points -> NRR -> Wins
+//   'pure-pool'          -> top 8 overall by Points -> NRR -> ARPW
 //   'winners-runnersup'  -> every group winner + best runners-up
 export function seededSuper8(teams, matches, format) {
   const standings = standingsByGroup(teams, matches)

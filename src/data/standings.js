@@ -7,7 +7,7 @@ const WIN_POINTS = 2
 const TIE_POINTS = 1
 
 // 6-a-side: a side is "all out" at 5 wickets down (6 players -> 5 dismissals).
-const WICKETS_ALL_OUT = 5
+export const WICKETS_ALL_OUT = 5
 
 function blankRow(team) {
   return {
@@ -23,8 +23,18 @@ function blankRow(team) {
     runsAgainst: 0,
     oversAgainst: 0,
     nrr: 0,
+    // ARPW (Average Runs Scored Per Wicket) — the tie-breaker after NRR.
+    wicketsLost: 0,
+    arpw: 0,
     form: [], // recent results, newest last: 'W' | 'L' | 'T'
   }
+}
+
+// Average Runs Scored Per Wicket. A side that never lost a wicket has no
+// meaningful average, so its total runs stand in (finite, and still ranks it
+// above any side that scored less).
+export function averageRunsPerWicket(runsFor, wicketsLost) {
+  return wicketsLost > 0 ? runsFor / wicketsLost : runsFor
 }
 
 // Overs like "2.1" mean 2 overs + 1 ball -> convert to true decimal overs (balls / 6).
@@ -57,9 +67,9 @@ export function computeStandings(year = LAST_COMPLETED_SEASON) {
     a.played++
 
     // Home batting is credited against away's bowling, and vice-versa.
-    h.runsFor += hs.runs;  h.oversFor += hOvers
+    h.runsFor += hs.runs;  h.oversFor += hOvers;  h.wicketsLost += hs.wickets
     h.runsAgainst += as.runs;  h.oversAgainst += aOvers
-    a.runsFor += as.runs;  a.oversFor += aOvers
+    a.runsFor += as.runs;  a.oversFor += aOvers;  a.wicketsLost += as.wickets
     a.runsAgainst += hs.runs;  a.oversAgainst += hOvers
 
     if (hs.runs > as.runs) {
@@ -78,17 +88,23 @@ export function computeStandings(year = LAST_COMPLETED_SEASON) {
     const rrFor = r.oversFor > 0 ? r.runsFor / r.oversFor : 0
     const rrAgainst = r.oversAgainst > 0 ? r.runsAgainst / r.oversAgainst : 0
     r.nrr = rrFor - rrAgainst
+    r.arpw = averageRunsPerWicket(r.runsFor, r.wicketsLost)
   })
 
   return rows
 }
 
-// Sorted standings for a group: Points, then NRR, then Wins.
+// Official rank order: Points, then NRR, then ARPW (Wins is a final fallback so
+// the sort stays deterministic when even ARPW is level).
+export const byRank = (a, b) =>
+  b.points - a.points || b.nrr - a.nrr || b.arpw - a.arpw || b.won - a.won
+
+// Sorted standings for a group.
 export function groupStandings(year, group) {
   const rows = computeStandings(year)
   return teamsByGroup(group)
     .map((t) => rows[t.id])
-    .sort((a, b) => b.points - a.points || b.nrr - a.nrr || b.won - a.won)
+    .sort(byRank)
 }
 
 // NRR shown to 4 decimals so near-identical rates stay distinguishable.

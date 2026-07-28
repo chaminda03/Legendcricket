@@ -8,6 +8,7 @@ import {
 import { standingsByGroup, seededSuper8, buildBracketFrom, knockoutResultsFromMatches } from '../../data/compute'
 import { formatNRR } from '../../data/standings'
 import { CURRENT_SEASON } from '../../data/seasons'
+import { OVERS_PER_INNINGS } from '../../data/fixtures'
 import { useFormat } from '../../context/FormatContext'
 import { matchesLabel, qualifyLabel } from '../../data/formats'
 
@@ -147,6 +148,21 @@ export default function AdminMatches() {
           </>
         )}
       </div>
+
+      {/* Scoring hint — matters for correct NRR */}
+      {matches.length > 0 && (
+        <div className="admin-hint">
+          <span className="admin-hint-ico" aria-hidden="true">💡</span>
+          <div>
+            <strong>Entering overs (Ov) correctly keeps NRR accurate.</strong> Enter the <em>actual overs a team faced</em>, in
+            {' '}<code>overs.balls</code> form (e.g. <code>4.3</code> = 4 overs 3 balls).
+            <ul>
+              <li>A side <strong>bowled out</strong> (5 wkts) is auto-credited the full quota — enter their real overs anyway.</li>
+              <li>A team that <strong>chases and wins early</strong>: enter the over the winning run came (e.g. <code>4.3</code>), <em>not</em> the full {OVERS_PER_INNINGS}. Over-stating their overs would understate their NRR.</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Per-group fixtures + standings */}
       {activeGroups.map((g) => {
