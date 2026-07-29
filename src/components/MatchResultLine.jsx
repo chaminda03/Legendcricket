@@ -13,7 +13,6 @@ export default function MatchResultLine({ m, teamsById }) {
     <div className="result-line">
       <span className="tb-xs" style={{ background: w.color || '#334155' }}>{w.short || '—'}</span>
       <span><strong>{w.name || 'Winner'}</strong> won</span>
-      <span className="margin">{outcome.margin} run{outcome.margin === 1 ? '' : 's'} margin</span>
     </div>
   )
 }
