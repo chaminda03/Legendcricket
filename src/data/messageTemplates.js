@@ -12,11 +12,11 @@ export const DEFAULT_TEMPLATES = [
 
   { key: 'onboarding', label: 'Approved + group draw', tier: 1, sort: 10,
     vars: ['captain', 'team', 'group', 'edition', 'url'],
-    body: `Hi {captain}, {team} is confirmed for the {edition} VA Legends Cricket Carnival — you're in Group {group}. Report by 8 AM. Fixtures: {url}` },
+    body: `Hi {captain}, {team} is confirmed for the {edition} VA Legends Cricket Carnival — you're in Group {group}. Report by 8:45 AM. Fixtures: {url}` },
 
   { key: 'reminder', label: 'Day-before reminder', tier: 1, sort: 20,
     vars: ['captain', 'team', 'edition'],
-    body: `Reminder: the {edition} VA Legends Carnival is tomorrow. Report by 8 AM, captains' meeting at 8, bring your squad of 6. Good luck, {team}!` },
+    body: `Reminder: the {edition} VA Legends Carnival is tomorrow. Report to the Marshal by 8:45 AM with your squad of 6. First match 9 AM. Good luck, {team}!` },
 
   { key: 'up_next', label: 'Up next (broadcast)', tier: 1, sort: 30,
     vars: ['team', 'detail'],
@@ -38,9 +38,9 @@ export const DEFAULT_TEMPLATES = [
     vars: ['team', 'outcome', 'round', 'opponent', 'url'],
     body: `{team} {outcome}! Next up: {round} vs {opponent}. Bracket: {url}/knockouts` },
 
-  { key: 'umpire', label: 'Umpire-duty reminder', tier: 2, sort: 80,
+  { key: 'umpire', label: 'Umpire conduct reminder', tier: 2, sort: 80,
     vars: ['team'],
-    body: `Reminder to {team}: each team must umpire at least 3 games or incur a $30 fee. Please check in with the Marshal.` },
+    body: `Reminder to {team}: VLCC provides all official umpires and their decisions are final. Only the captain may raise a dispute with the Marshal.` },
 
   { key: 'ceremony', label: 'Awards ceremony', tier: 2, sort: 90,
     vars: [],

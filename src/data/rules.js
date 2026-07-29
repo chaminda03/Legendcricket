@@ -37,7 +37,7 @@ export const RULES_SECTIONS = [
           `The winning team will receive a $1,000 cash prize, the Championship Challenge Trophy, and individual trophies for 8 registered players.`,
           `The runners-up will receive a $500 cash prize, a trophy, and individual trophies for 8 registered players.`,
           `Awards will include: 'Best Batsman,' 'Best Bowler,' and 'Most Valuable Player' (determined by Semi-Final and Final performances).`,
-          `All trophies will be managed by a 3-member panel appointed by the organizers. The championship trophy must be returned to the tournament director immediately after the ceremony; winners will receive a special miniature version.`,
+          `All trophies will be managed by a 3-member panel appointed by the organizers.`,
         ] } },
       ] } },
     ],
@@ -53,25 +53,24 @@ export const RULES_SECTIONS = [
   {
     title: 'Teams',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `Registration is first-come-first-served. The VLCC reserves the right to deny entry.`,
-      `All teams must report to the Tournament Marshal by 8:00 AM.`,
-      `Each team may register 8 players; 6 must be selected and reported to scorers prior to each game. Once the game begins, no roster changes are allowed.`,
+      `Registration is first-come, first-served. The VLCC reserves the right to deny entry.`,
+      `All teams must report to the Tournament Marshal by 8:45 AM.`,
+      `Each team may register 8 players; 6 must be selected and reported to scorers before each game. Once the game begins, no roster changes are allowed.`,
       `Substitutions are allowed only for in-match injuries; however, substitutes cannot bat or bowl.`,
     ] } }],
   },
   {
     title: 'Tournament Proceedings',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `Mandatory Captains' meeting at 8:00 AM in the Tournament Marshal's tent. Up to 4 players may be swapped from the original entry form at this time.`,
       `The first match begins at 9:00 AM.`,
-      `The toss will be held 15 minutes prior to the scheduled start.`,
-      `Teams not ready at the start time will be penalized 5 runs; after 30 minutes, the team will forfeit with full points awarded to the opponent. This is strictly enforced with no exceptions.`,
+      `The toss will be held 15 minutes before the scheduled start.`,
+      `Teams not ready at the start time will forfeit the game with full points awarded to the opponent. This is strictly enforced with no exceptions.`,
     ] } }],
   },
   {
     title: 'The Field',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `The pitch shall be 20 yards (60 feet) long.`,
+      `The pitch shall be 19 yards (57 feet) long.`,
       `The boundary line shall be 33 yards from the pitch, or as the ground allows.`,
     ] } }],
   },
@@ -89,7 +88,7 @@ export const RULES_SECTIONS = [
     blocks: [{ list: { style: 'lower-alpha', items: [
       `MCC "No Ball" rules apply. One extra ball and one extra run are awarded per No Ball.`,
       `A Wide Ball is any delivery outside the return crease marks (3 feet from either side of the middle stump). One extra run and one extra ball are awarded.`,
-      `Deliveries above head-height are a No Ball.`,
+      `Deliveries above head height are a No Ball.`,
       `Under-arm bowling is a No Ball.`,
       `Full tosses above waist height are a No Ball.`,
       `Balls bouncing before 10 yards or failing to reach the batsman are "Dead Ball."`,
@@ -108,10 +107,7 @@ export const RULES_SECTIONS = [
   {
     title: 'Umpires',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `Each team representative must provide at least two (2) knowledgeable umpires.`,
-      `The Tournament Marshal will assign umpires. Failure to supply an umpire when requested results in disqualification. Teams must umpire at least 3 games to avoid an additional $30 fee.`,
-      `Umpires must not be affiliated with the teams in the match they officiate.`,
-      `Each captain has one (1) opportunity to request a change of umpire at the time of assignment.`,
+      `VLCC will provide official main umpires for all the games.`,
       `Umpires have final decision-making power. Supporters may not challenge decisions; challenges are grounds for disqualification.`,
       `Semi-Finals and Finals will feature four boundary line officials.`,
       `ONLY THE TEAM CAPTAIN may discuss disputes with tournament management.`,
