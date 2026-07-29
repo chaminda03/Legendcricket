@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import StandingsTable from '../components/StandingsTable'
 import Carousel from '../components/Carousel'
+import MatchResultLine from '../components/MatchResultLine'
 import { CURRENT_SEASON, LAST_COMPLETED_SEASON, editionForSeason, ordinal } from '../data/seasons'
 import { useFormat } from '../context/FormatContext'
 import { useSeasonData } from '../hooks/useSeasonData'
@@ -143,6 +144,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
+                  <MatchResultLine m={m} teamsById={teamsById} />
                 </div>
               )
             })}

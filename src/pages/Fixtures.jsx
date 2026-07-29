@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import SeasonSelect from '../components/SeasonSelect'
 import SeasonEmpty from '../components/SeasonEmpty'
+import MatchResultLine from '../components/MatchResultLine'
 import { useSeason } from '../context/SeasonContext'
 import { useSeasonData } from '../hooks/useSeasonData'
 import { indexById } from '../data/compute'
@@ -35,6 +36,7 @@ function MatchCard({ m, teamsById }) {
           </div>
         </div>
       </div>
+      <MatchResultLine m={m} teamsById={teamsById} />
       {(m.date || m.venue) && (
         <div className="match-meta" style={{ marginTop: 12, marginBottom: 0 }}>
           {m.date && <span>🏏 {m.date}</span>}

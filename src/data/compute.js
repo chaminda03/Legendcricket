@@ -30,6 +30,20 @@ export function isPlayed(m) {
   return m.status === 'completed' && m.home_runs != null && m.away_runs != null
 }
 
+// Who won a completed match — { winnerId, tied, margin } — or null while it is
+// still unplayed. `margin` is the plain run difference: the DB doesn't record
+// which side batted first, so the "won by N wickets" convention can't be derived.
+export function matchOutcome(m) {
+  if (!isPlayed(m)) return null
+  if (m.home_runs === m.away_runs) return { winnerId: null, tied: true, margin: 0 }
+  const homeWon = m.home_runs > m.away_runs
+  return {
+    winnerId: homeWon ? m.home_team : m.away_team,
+    tied: false,
+    margin: Math.abs(m.home_runs - m.away_runs),
+  }
+}
+
 export function normalizeMatch(m) {
   return {
     id: m.id,

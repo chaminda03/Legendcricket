@@ -398,6 +398,15 @@ h1, h2, h3, h4 {
 .tag.done { background: rgba(198,255,61,0.12); color: var(--primary); border: 1px solid rgba(198,255,61,0.3); }
 .tag.soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
 .tag.grp { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.result-line {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 14px; padding: 9px 12px; font-size: 0.88rem;
+  background: rgba(198,255,61,0.08); border: 1px solid rgba(198,255,61,0.28);
+  border-radius: var(--radius-sm); color: var(--text);
+}
+.result-line strong { color: var(--primary); font-family: var(--head); }
+.result-line .margin { margin-left: auto; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.result-line.tied { background: var(--surface-2); border-color: var(--border); color: var(--muted); }
 
 /* ---------- Forms ---------- */
 .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; max-width: 720px; }
@@ -556,6 +565,15 @@ h1, h2, h3, h4 {
   color: var(--text); padding: 6px 9px; font-size: 0.85rem; font-family: var(--body);
 }
 .mini-input { width: 72px; margin-left: 8px; text-transform: uppercase; }
+.mini-textarea {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); padding: 6px 9px; font-size: 0.82rem; font-family: var(--body);
+  width: 100%; min-width: 170px; line-height: 1.5; resize: vertical;
+}
+.mini-textarea:focus { outline: 0; border-color: var(--primary); }
+.squad-cell { display: flex; flex-direction: column; gap: 4px; }
+.squad-count { color: var(--muted-2); font-size: 0.74rem; }
+.squad-count.ok { color: var(--primary); }
 .mini-select:focus, .mini-input:focus { outline: 0; border-color: var(--primary); }
 .mini-select:disabled { opacity: 0.4; }
 .linklike { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 0.85rem; text-decoration: underline; padding: 0; }

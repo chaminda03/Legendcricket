@@ -3,6 +3,41 @@ import { Link } from 'react-router-dom'
 import { fetchAllTeams, updateTeam, deleteTeam } from '../../lib/db'
 import { useFormat } from '../../context/FormatContext'
 import { CURRENT_SEASON } from '../../data/seasons'
+import { SQUAD_SIZE } from '../../data/fixtures'
+
+// Inline editor for the squad blob (one name per line). Edits are kept local
+// while typing and committed on blur, so a roster edit is one write, not one
+// per keystroke.
+function SquadCell({ team, onSave }) {
+  const saved = team.players || ''
+  const [draft, setDraft] = useState(saved)
+  useEffect(() => { setDraft(saved) }, [saved])
+
+  const names = draft.split('\n').map((s) => s.trim()).filter(Boolean)
+  const dirty = draft !== saved
+
+  const commit = () => {
+    const cleaned = names.join('\n')
+    setDraft(cleaned)
+    if (cleaned !== saved) onSave(cleaned)
+  }
+
+  return (
+    <div className="squad-cell">
+      <textarea
+        className="mini-textarea"
+        rows={Math.min(Math.max(names.length + 1, 3), 9)}
+        value={draft}
+        placeholder="One player per line"
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+      />
+      <span className={`squad-count${names.length === SQUAD_SIZE ? ' ok' : ''}`}>
+        {names.length}/{SQUAD_SIZE} players{dirty ? ' · unsaved' : ''}
+      </span>
+    </div>
+  )
+}
 
 export default function AdminTeams() {
   const { format } = useFormat()
@@ -103,7 +138,9 @@ export default function AdminTeams() {
                   </td>
                   <td>{t.captain_name || '—'}<br /><span className="muted">V: {t.vice_captain_name || '—'}</span></td>
                   <td>{t.captain_email}<br /><span className="muted">{t.captain_phone}</span></td>
-                  <td style={{ maxWidth: 200 }}><span className="muted" style={{ whiteSpace: 'pre-line', fontSize: '0.82rem' }}>{t.players || '—'}</span></td>
+                  <td style={{ minWidth: 190 }}>
+                    <SquadCell team={t} onSave={(players) => patch(t.id, { players })} />
+                  </td>
                   <td>
                     <select className="mini-select" value={t.status} onChange={(e) => patch(t.id, { status: e.target.value })}>
                       <option value="pending">Pending</option>
