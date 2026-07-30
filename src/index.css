@@ -453,6 +453,8 @@ h1, h2, h3, h4 {
   letter-spacing: 0.06em; font-size: 0.8rem;
 }
 .admin-toolbar.sched-save { position: sticky; bottom: 16px; margin-bottom: 0; box-shadow: var(--shadow); }
+.admin-toolbar.confirm-bar { margin-top: -12px; border-color: var(--gold); background: rgba(255,196,61,0.06); }
+.admin-toolbar.confirm-bar span { flex: 1; min-width: 260px; font-size: 0.9rem; line-height: 1.5; }
 .result-line {
   display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
   margin-top: 14px; padding: 9px 12px; font-size: 0.88rem; text-align: center;

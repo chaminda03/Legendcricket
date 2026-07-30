@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  fetchApprovedTeams, fetchMatches, saveSchedule, saveKnockoutSlot, clearSchedule,
+  fetchApprovedTeams, fetchMatches, saveSchedule, insertKnockoutSlots, clearSchedule,
 } from '../../lib/db'
 import { seededSuper8, buildBracketFrom, knockoutResultsFromMatches } from '../../data/compute'
 import { CURRENT_SEASON } from '../../data/seasons'
@@ -62,6 +62,9 @@ export default function AdminSchedule() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [saved, setSaved] = useState('')
+  // Inline confirmation instead of window.confirm(): a modal dialog blocks the
+  // main thread for as long as it is open, which Chrome counts against INP.
+  const [confirming, setConfirming] = useState(null) // null | 'build' | 'clear'
 
   const [start, setStart] = useState(DEFAULT_START)
   const [slotMinutes, setSlotMinutes] = useState(DEFAULT_SLOT_MINUTES)
@@ -114,20 +117,32 @@ export default function AdminSchedule() {
 
   // ---- Actions --------------------------------------------------------------
 
+  // Knockout slots that already have a row are patched by id alongside the group
+  // matches; only genuinely new ones need an insert. Two requests, not one pair
+  // of round trips per slot.
+  const splitKo = (slots) => {
+    const patch = [], create = []
+    slots.forEach((s) => {
+      const row = koByCode[s.code]
+      if (row) patch.push({ id: row.id, field: s.field, start_time: s.start_time })
+      else create.push(s)
+    })
+    return { patch, create }
+  }
+
   const autoBuild = async () => {
+    setConfirming(null)
     if (groupMatches.length === 0) { setError('Generate the group fixtures first.'); return }
-    if (!window.confirm(
-      `Lay out ${groupMatches.length} group matches across ${fields} fields from ${formatTime(start)}, ` +
-      `${slotMinutes} minutes a slot? This overwrites any times already set.`)) return
     setBusy(true); setError(''); setSaved('')
     try {
       const opts = { start, slotMinutes: Number(slotMinutes), fields: Number(fields) }
       const groupPlan = planGroupSchedule(groupMatches, opts)
       const koPlan = planKnockoutSchedule({ ...opts, start: endOfGroupStage(groupPlan, opts.slotMinutes) })
-      await saveSchedule(groupPlan)
-      for (const slot of koPlan) {
-        await saveKnockoutSlot(CURRENT_SEASON, slot.code, { field: slot.field, start_time: slot.start_time })
-      }
+      const { patch, create } = splitKo(koPlan)
+      await Promise.all([
+        saveSchedule([...groupPlan, ...patch]),
+        insertKnockoutSlots(CURRENT_SEASON, create),
+      ])
       await load()
       setSaved(`Scheduled ${groupPlan.length} group matches and ${koPlan.length} knockout slots.`)
     } catch (err) { setError(err.message) } finally { setBusy(false) }
@@ -136,20 +151,23 @@ export default function AdminSchedule() {
   const saveAll = async () => {
     setBusy(true); setError(''); setSaved('')
     try {
-      await saveSchedule(dirty.group.map((m) => ({ id: m.id, ...asRow(drafts[m.id]) })))
-      for (const code of dirty.ko) {
-        const row = asRow(koDrafts[code])
+      const groupRows = dirty.group.map((m) => ({ id: m.id, ...asRow(drafts[m.id]) }))
+      const koSlots = dirty.ko
+        .map((code) => ({ code, ...asRow(koDrafts[code]) }))
         // Nothing to write for a slot that is still blank and has no row yet.
-        if (!koByCode[code] && row.field == null && row.start_time == null) continue
-        await saveKnockoutSlot(CURRENT_SEASON, code, row)
-      }
+        .filter((s) => koByCode[s.code] || s.field != null || s.start_time != null)
+      const { patch, create } = splitKo(koSlots)
+      await Promise.all([
+        saveSchedule([...groupRows, ...patch]),
+        insertKnockoutSlots(CURRENT_SEASON, create),
+      ])
       await load()
       setSaved('Schedule saved.')
     } catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
   const clearAll = async () => {
-    if (!window.confirm('Clear every kick-off time and field? Scores are not affected.')) return
+    setConfirming(null)
     setBusy(true); setError(''); setSaved('')
     try { await clearSchedule(CURRENT_SEASON); await load(); setSaved('Schedule cleared.') }
     catch (err) { setError(err.message) } finally { setBusy(false) }
@@ -185,11 +203,31 @@ export default function AdminSchedule() {
           <input className="mini-input sched-num" type="number" min="1" max="8"
             value={fields} onChange={(e) => setFields(e.target.value)} />
         </label>
-        <button className="btn btn-primary" disabled={busy} onClick={autoBuild}>
+        <button className="btn btn-primary" disabled={busy} onClick={() => setConfirming('build')}>
           {busy ? 'Working…' : '⚙️ Auto-build schedule'}
         </button>
-        <button className="btn btn-ghost" disabled={busy} onClick={clearAll}>Clear schedule</button>
+        <button className="btn btn-ghost" disabled={busy} onClick={() => setConfirming('clear')}>Clear schedule</button>
       </div>
+
+      {confirming === 'build' && (
+        <div className="admin-toolbar confirm-bar">
+          <span>
+            Lay out <strong>{groupMatches.length} group matches</strong> across {fields} fields from{' '}
+            <strong>{formatTime(start)}</strong>, {slotMinutes} minutes a slot, then the knockouts after?
+            Any times already set are overwritten.
+          </span>
+          <button className="btn btn-primary btn-sm" onClick={autoBuild}>Yes, build it</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => setConfirming(null)}>Cancel</button>
+        </div>
+      )}
+
+      {confirming === 'clear' && (
+        <div className="admin-toolbar confirm-bar">
+          <span>Clear every kick-off time and field? Scores are not affected.</span>
+          <button className="btn btn-primary btn-sm" onClick={clearAll}>Yes, clear it</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => setConfirming(null)}>Cancel</button>
+        </div>
+      )}
 
       {groupMatches.length === 0 ? (
         <div className="empty">

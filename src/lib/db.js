@@ -148,19 +148,17 @@ export async function saveSchedule(rows) {
 }
 
 // A knockout slot has no match row until its score is entered, so timing one
-// creates a placeholder (no teams, no scores). saveKnockoutScore() finds it by
-// season+stage+code and fills it in later.
-export async function saveKnockoutSlot(season, code, patch) {
-  const { data: existing, error: selErr } = await supabase
-    .from('matches').select('id')
-    .eq('season', season).eq('stage', 'knockout').eq('code', code)
-    .maybeSingle()
-  if (selErr) throw new Error(selErr.message)
-
-  const q = existing
-    ? supabase.from('matches').update(patch).eq('id', existing.id)
-    : supabase.from('matches').insert([{ season, stage: 'knockout', code, status: 'scheduled', ...patch }])
-  const { error } = await q
+// creates a placeholder (no teams, no scores) that saveKnockoutScore() finds by
+// season+stage+code and fills in later. Slots whose row already exists are
+// patched by id through saveSchedule() instead — one insert, one upsert, rather
+// than a select+write per slot.
+export async function insertKnockoutSlots(season, slots) {
+  if (!slots || slots.length === 0) return
+  const rows = slots.map((s) => ({
+    season, stage: 'knockout', code: s.code, status: 'scheduled',
+    field: s.field, start_time: s.start_time,
+  }))
+  const { error } = await supabase.from('matches').insert(rows)
   if (error) throw new Error(error.message)
 }
 
