@@ -54,6 +54,8 @@ export const RULES_SECTIONS = [
     title: 'Teams',
     blocks: [{ list: { style: 'lower-alpha', items: [
       `Registration is first-come, first-served. The VLCC reserves the right to deny entry.`,
+      `All players must be of Sri Lankan origin or Sri Lankan by ancestry.`,
+      `A player must have played at least one (1) game in the first round to qualify for the playoffs.`,
       `All teams must report to the Tournament Marshal by 8:45 AM.`,
       `Each team may register 8 players; 6 must be selected and reported to scorers before each game. Once the game begins, no roster changes are allowed.`,
       `Substitutions are allowed only for in-match injuries; however, substitutes cannot bat or bowl.`,
@@ -70,7 +72,7 @@ export const RULES_SECTIONS = [
   {
     title: 'The Field',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `The pitch shall be 19 yards (57 feet) long.`,
+      `The pitch shall be 59 feet long.`,
       `The boundary line shall be 33 yards from the pitch, or as the ground allows.`,
     ] } }],
   },
@@ -86,7 +88,7 @@ export const RULES_SECTIONS = [
   {
     title: 'Bowling',
     blocks: [{ list: { style: 'lower-alpha', items: [
-      `MCC "No Ball" rules apply. One extra ball and one extra run are awarded per No Ball.`,
+      `One extra ball and one extra run are awarded per No Ball.`,
       `A Wide Ball is any delivery outside the return crease marks (3 feet from either side of the middle stump). One extra run and one extra ball are awarded.`,
       `Deliveries above head height are a No Ball.`,
       `Under-arm bowling is a No Ball.`,
