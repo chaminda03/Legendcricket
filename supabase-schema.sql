@@ -35,8 +35,15 @@ create table if not exists public.matches (
   home_runs   int, home_wkts int, home_overs numeric(4,1),
   away_runs   int, away_wkts int, away_overs numeric(4,1),
   winner      uuid references public.teams(id) on delete set null,  -- knockouts
-  status      text not null default 'scheduled' -- scheduled | completed
+  status      text not null default 'scheduled', -- scheduled | completed
+  field       int,                               -- playing field 1..N (null = unscheduled)
+  start_time  text                               -- kick-off, 'HH:MM' 24-hour (null = unscheduled)
 );
+
+-- Existing tournaments: `create table if not exists` above skips already-created
+-- tables, so add the match-day schedule columns explicitly. Safe to re-run.
+alter table public.matches add column if not exists field      int;
+alter table public.matches add column if not exists start_time text;
 
 -- ---------- Row Level Security ---------------------------------------------
 alter table public.teams   enable row level security;

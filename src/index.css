@@ -398,6 +398,61 @@ h1, h2, h3, h4 {
 .tag.done { background: rgba(198,255,61,0.12); color: var(--primary); border: 1px solid rgba(198,255,61,0.3); }
 .tag.soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
 .tag.grp { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.tag.ko { background: rgba(255,196,61,0.12); color: var(--gold); border: 1px solid rgba(255,196,61,0.3); }
+
+/* ---------- Match-day schedule (public timetable) ---------- */
+.schedule-table { width: 100%; border-collapse: collapse; min-width: 820px; background: var(--surface); }
+.schedule-table thead th {
+  font-family: var(--head); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; font-size: 0.85rem; color: var(--muted);
+  text-align: left; padding: 14px 12px; background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+}
+.schedule-table tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.schedule-table tbody tr:last-child td { border-bottom: 0; }
+.schedule-table .time-col { width: 118px; white-space: nowrap; }
+.schedule-table tbody .time-col { vertical-align: middle; }
+.slot-time { font-family: var(--head); font-weight: 800; font-size: 1.15rem; color: var(--primary); font-variant-numeric: tabular-nums; }
+.slot-free { color: var(--muted-2); }
+.slot-card {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px 12px; min-width: 180px;
+}
+.slot-card + .slot-card { margin-top: 8px; }
+.slot-card.done { border-color: rgba(198,255,61,0.3); background: rgba(198,255,61,0.04); }
+.slot-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.slot-code { font-family: var(--head); font-weight: 800; color: var(--muted-2); font-size: 0.82rem; letter-spacing: 0.06em; }
+.slot-teams { display: grid; gap: 5px; }
+.sc-team { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; }
+.sc-team.won { color: var(--primary); }
+.sc-team.tbd { color: var(--muted-2); font-weight: 500; font-style: italic; }
+.sc-team-name { overflow-wrap: anywhere; }
+.slot-vs { font-family: var(--head); color: var(--muted-2); font-size: 0.75rem; letter-spacing: 0.1em; }
+.slot-score { margin-top: 8px; color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.unscheduled-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.unscheduled-list .slot-card { background: var(--surface); }
+
+/* ---------- Match-day schedule (admin editor) ---------- */
+.sched-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+}
+.sched-row.done { border-color: rgba(198,255,61,0.3); background: rgba(198,255,61,0.04); }
+.sched-tag {
+  font-family: var(--head); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 0.7rem; color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px; flex-shrink: 0;
+}
+.mini-select.sched-field { width: 110px; flex-shrink: 0; }
+.mini-input.sched-time { width: 116px; margin-left: 0; text-transform: none; flex-shrink: 0; }
+.mini-input.sched-num { width: 72px; margin-left: 0; text-transform: none; text-align: center; }
+.sched-opt {
+  display: inline-flex; align-items: center; gap: 8px; color: var(--muted);
+  font-family: var(--head); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; font-size: 0.8rem;
+}
+.admin-toolbar.sched-save { position: sticky; bottom: 16px; margin-bottom: 0; box-shadow: var(--shadow); }
 .result-line {
   display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
   margin-top: 14px; padding: 9px 12px; font-size: 0.88rem; text-align: center;

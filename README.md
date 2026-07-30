@@ -14,6 +14,7 @@ Built with **React + Vite**, with registrations + a committee admin panel on **S
 | **Home** | Bold hero, tournament stats, feature highlights, Group A preview, latest results, CTA |
 | **Points Table** | Live standings for all 4 groups — points, Net Run Rate, form guide, qualification zone. Computed automatically from match results |
 | **Knockouts** | Qualified-team seeding + full quarterfinal → semifinal → grand-final bracket |
+| **Schedule** | Match-day timetable — one row per kick-off, one column per field, so you can see every simultaneous game at a glance |
 | **Fixtures** | Full round-robin schedule with scorelines; filter by group / results |
 | **Teams** | All 16 teams grouped A–D with colours |
 | **Register** | 8-player squad registration form → saved to Supabase (as a pending team) |
@@ -99,6 +100,9 @@ everything from a login-protected admin panel.
    (any name / region). Wait for it to finish provisioning.
 2. **Create the tables** — in the project: **SQL Editor → New query**, paste the
    contents of [`supabase-schema.sql`](./supabase-schema.sql), and click **Run**.
+   Re-run this same file after pulling updates: it is written to be safe to run
+   again and adds any columns newer releases need (e.g. the schedule's `field`
+   and `start_time`).
 3. **Get your keys** — **Project Settings → API**, copy the *Project URL* and the
    *anon / public* key.
 4. **Add them to the app** — copy `.env.example` to `.env` and fill in:
@@ -127,8 +131,12 @@ committee members can approve teams, run the draw, and edit results.
 - **Login** at `/admin/login` (Supabase Auth — committee accounts only).
 - **Teams & Draw** — see every registration, approve/reject, and assign each
   approved team to Group A–D. The draw drives the public points table & bracket.
-- *Coming in Phase 2:* auto-generate fixtures, enter match scores, and manage the
-  knockout bracket — all from the panel.
+- **Fixtures & Scores** — generate the group fixtures from the draw, then enter
+  scores; standings and the Super 8 bracket update live.
+- **Schedule** — set each game's kick-off time and field. *Auto-build* gives every
+  group a field of its own and runs its matches back to back, so all fields kick
+  off together, then lays the quarterfinals, semis and final out after them. Any
+  game can be moved by hand afterwards. Feeds the public **Schedule** page.
 
 ---
 

@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import SeasonSelect from '../components/SeasonSelect'
 import SeasonEmpty from '../components/SeasonEmpty'
 import MatchResultLine from '../components/MatchResultLine'
 import { useSeason } from '../context/SeasonContext'
 import { useSeasonData } from '../hooks/useSeasonData'
 import { indexById } from '../data/compute'
+import { formatTime } from '../data/schedule'
 
 function MatchCard({ m, teamsById }) {
   const h = teamsById[m.home_team] || {}
@@ -37,8 +39,10 @@ function MatchCard({ m, teamsById }) {
         </div>
       </div>
       <MatchResultLine m={m} teamsById={teamsById} />
-      {(m.date || m.venue) && (
+      {(m.start_time || m.field != null || m.date || m.venue) && (
         <div className="match-meta" style={{ marginTop: 12, marginBottom: 0 }}>
+          {m.start_time && <span>🕘 {formatTime(m.start_time)}</span>}
+          {m.field != null && <span>🏟️ Field {m.field}</span>}
           {m.date && <span>🏏 {m.date}</span>}
           {m.venue && <span>📍 {m.venue}</span>}
         </div>
@@ -68,9 +72,9 @@ export default function Fixtures() {
     <section className="section">
       <div className="container">
         <div className="section-head">
-          <span className="eyebrow">Schedule</span>
+          <span className="eyebrow">Every Match</span>
           <h2>Fixtures &amp; Results</h2>
-          <p>All group-stage matches across the championship.</p>
+          <p>All group-stage matches across the championship. For kick-off times by field, see the <Link to="/schedule" style={{ color: 'var(--primary)' }}>match-day schedule</Link>.</p>
         </div>
 
         <SeasonSelect />

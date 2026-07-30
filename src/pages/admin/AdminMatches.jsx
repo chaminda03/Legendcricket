@@ -53,6 +53,9 @@ export default function AdminMatches() {
 
   const standings = useMemo(() => standingsByGroup(teams, matches), [teams, matches])
   const groupedTeamCount = teams.filter((t) => t.grp).length
+  // This tab owns the group draw only — knockout rows (which the Schedule tab can
+  // create before a score exists) must not count as "fixtures already generated".
+  const groupMatches = useMemo(() => matches.filter((m) => m.stage !== 'knockout' && m.grp), [matches])
   // Show whatever groups actually have fixtures, so the view is correct for any
   // format (4 or 5 groups) regardless of the admin's current format selection.
   const activeGroups = useMemo(
@@ -130,7 +133,7 @@ export default function AdminMatches() {
 
       {/* Controls */}
       <div className="admin-toolbar">
-        {matches.length === 0 ? (
+        {groupMatches.length === 0 ? (
           <>
             <button className="btn btn-primary" disabled={busy || groupedTeamCount < 2} onClick={generate}>
               {busy ? 'Generating…' : '⚙️ Generate Group Fixtures'}
@@ -143,14 +146,14 @@ export default function AdminMatches() {
           </>
         ) : (
           <>
-            <span className="muted">{matches.length} matches · {matches.filter((m) => m.status === 'completed').length} played</span>
+            <span className="muted">{groupMatches.length} matches · {groupMatches.filter((m) => m.status === 'completed').length} played</span>
             <button className="btn btn-ghost" disabled={busy} onClick={clearAll}>Clear all fixtures</button>
           </>
         )}
       </div>
 
       {/* Scoring hint — matters for correct NRR */}
-      {matches.length > 0 && (
+      {groupMatches.length > 0 && (
         <div className="admin-hint">
           <span className="admin-hint-ico" aria-hidden="true">💡</span>
           <div>

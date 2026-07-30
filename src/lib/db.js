@@ -136,6 +136,41 @@ export async function clearGroupFixtures(season = CURRENT_SEASON) {
   if (error) throw new Error(error.message)
 }
 
+// ---- Match-day schedule (field + kick-off time) ----------------------------
+
+// Bulk-write the day plan. Rows are { id, field, start_time }; upserting on the
+// primary key covers the whole tournament in one round trip and leaves every
+// other column (scores, teams, status) untouched.
+export async function saveSchedule(rows) {
+  if (!rows || rows.length === 0) return
+  const { error } = await supabase.from('matches').upsert(rows)
+  if (error) throw new Error(error.message)
+}
+
+// A knockout slot has no match row until its score is entered, so timing one
+// creates a placeholder (no teams, no scores). saveKnockoutScore() finds it by
+// season+stage+code and fills it in later.
+export async function saveKnockoutSlot(season, code, patch) {
+  const { data: existing, error: selErr } = await supabase
+    .from('matches').select('id')
+    .eq('season', season).eq('stage', 'knockout').eq('code', code)
+    .maybeSingle()
+  if (selErr) throw new Error(selErr.message)
+
+  const q = existing
+    ? supabase.from('matches').update(patch).eq('id', existing.id)
+    : supabase.from('matches').insert([{ season, stage: 'knockout', code, status: 'scheduled', ...patch }])
+  const { error } = await q
+  if (error) throw new Error(error.message)
+}
+
+// Clear every kick-off time and field for a season. Scores are left alone.
+export async function clearSchedule(season = CURRENT_SEASON) {
+  const { error } = await supabase
+    .from('matches').update({ field: null, start_time: null }).eq('season', season)
+  if (error) throw new Error(error.message)
+}
+
 // ---- Knockouts -------------------------------------------------------------
 
 // Save a knockout result (QF/SF/FINAL). Knockout rows aren't pre-generated — the
