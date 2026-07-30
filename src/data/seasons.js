@@ -5,14 +5,14 @@ import { FIXTURES } from './fixtures'
 //  so the site can show any year's standings / bracket from the dropdown.
 //
 //  2025 = the completed championship (real data, champion: Challengers Green).
-//  2026 = the upcoming season — registration is open, fixtures TBA.
+//  2026 = the upcoming season — the field is set, fixtures TBA.
 // ============================================================================
 
 export const SEASONS = {
   2026: {
     year: 2026,
-    status: 'upcoming', // registration open, not started yet
-    tagline: 'Registration Open',
+    status: 'upcoming', // entries closed, not started yet
+    tagline: 'Registration Closed',
     fixtures: [],
     knockoutResults: {},
     champion: null,

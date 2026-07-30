@@ -9,7 +9,6 @@ const links = [
   { to: '/fixtures', label: 'Fixtures' },
   { to: '/teams', label: 'Teams' },
   { to: '/rules', label: 'Rules' },
-  { to: '/register', label: 'Register' },
 ]
 
 export default function Navbar() {
@@ -34,7 +33,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <Link to="/register" className="btn btn-primary nav-cta">Register Your Team</Link>
+        <Link to="/schedule" className="btn btn-primary nav-cta">Match Schedule</Link>
 
         <button className="nav-toggle" onClick={() => setOpen(!open)} aria-label="Toggle menu">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">

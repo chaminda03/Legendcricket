@@ -6,8 +6,8 @@ export default function SeasonEmpty({ year, what = 'Standings' }) {
     <div className="season-empty">
       <div className="ic">🏏</div>
       <h3>The {year} season is coming</h3>
-      <p>{what} will appear here once the {year} fixtures get under way. Teams are registering now — switch the season dropdown to a past year to view completed results.</p>
-      <Link to="/register" className="btn btn-primary">Register Your Team →</Link>
+      <p>{what} will appear here once the {year} fixtures get under way. Switch the season dropdown to a past year to view completed results.</p>
+      <Link to="/schedule" className="btn btn-primary">View the Schedule →</Link>
     </div>
   )
 }

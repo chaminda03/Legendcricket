@@ -27,8 +27,8 @@ export const SLIDES = [
   {
     id: 'season',
     eyebrow: 'Season 2026',
-    title: 'Registration Is Now Open',
-    text: 'Gather your squad of eight and claim your place at the biggest cricket carnival in the DMV.',
+    title: 'Registration Is Now Closed',
+    text: 'The field is set for the biggest cricket carnival in the DMV. Check the match-day schedule for kick-off times and fields.',
     cta: null,
     image: '/images/va-legends-squad.jpg',
     focus: 'center 68%', // players sit low in this frame — crop down onto them

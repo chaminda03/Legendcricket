@@ -29,10 +29,10 @@ export default function Footer() {
             <ul>
               <li><Link to="/points-table">Points Table</Link></li>
               <li><Link to="/knockouts">Knockout Bracket</Link></li>
+              <li><Link to="/schedule">Match-Day Schedule</Link></li>
               <li><Link to="/fixtures">Fixtures &amp; Results</Link></li>
               <li><Link to="/teams">Teams</Link></li>
               <li><Link to="/rules">Tournament Rules</Link></li>
-              <li><Link to="/register">Register a Team</Link></li>
             </ul>
           </div>
 

@@ -10,7 +10,7 @@ import { SLIDES, VALUES, GALLERY, ABOUT_IMAGE } from '../data/home'
 
 const features = [
   { ic: '🏆', title: 'Live Points Table', text: 'Four groups, real-time standings with Net Run Rate, form guide and qualification tracking.', to: '/points-table' },
-  { ic: '📋', title: 'Team Registration', text: 'Enter your 8-player squad in minutes and lock your spot in the championship.', to: '/register' },
+  { ic: '📅', title: 'Match-Day Schedule', text: 'Every kick-off time by field — four games running at once, all day long.', to: '/schedule' },
   { ic: '🥊', title: 'Knockout Bracket', text: 'Top two per group advance — follow the road through quarters, semis and the grand final.', to: '/knockouts' },
   { ic: '🛡️', title: '16 Legendary Teams', text: 'Sixteen clubs battle it out 6-a-side over five thrilling overs for the Legends trophy.', to: '/teams' },
 ]
@@ -177,8 +177,8 @@ export default function Home() {
         <div className="container">
           <div className="cta-band">
             <h2>Your team belongs on this stage</h2>
-            <p>Registration for Season 2026 is officially open. Secure your place before the brackets fill up.</p>
-            <Link to="/register" className="btn btn-primary btn-lg">Register Your Team</Link>
+            <p>Entries for Season {CURRENT_SEASON} have closed and the draw is set. See who plays who, when, and on which field.</p>
+            <Link to="/schedule" className="btn btn-primary btn-lg">View the Schedule</Link>
           </div>
         </div>
       </section>
