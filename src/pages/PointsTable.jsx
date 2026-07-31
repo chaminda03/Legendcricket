@@ -5,15 +5,26 @@ import SeasonEmpty from '../components/SeasonEmpty'
 import { useSeason } from '../context/SeasonContext'
 import { useFormat } from '../context/FormatContext'
 import { useSeasonData } from '../hooks/useSeasonData'
-import { standingsByGroup, indexById, seededSuper8 } from '../data/compute'
+import {
+  standingsByGroup, indexById, projectedSuper8, overallStandings,
+  groupMatchesPlayed, groupMatchesRemaining,
+} from '../data/compute'
 import { CURRENT_SEASON, getSeason } from '../data/seasons'
 import { getFormat, qualifyDescription } from '../data/formats'
+
+// "Nothing is settled until N more matches are played." Keeps the projection
+// honestly labelled as a projection.
+const matchesLeft = (matches) => {
+  const left = groupMatchesRemaining(matches)
+  if (left === 0) return 'The group stage is complete — these are the final qualifiers.'
+  return `Nothing is settled: ${left} group ${left === 1 ? 'match' : 'matches'} still to play.`
+}
 
 export default function PointsTable() {
   const { season } = useSeason()
   const { format: adminFormat } = useFormat()
   const { teams, matches, loading } = useSeasonData(season)
-  const [group, setGroup] = useState('A')
+  const [group, setGroup] = useState('overall')
 
   // Live season uses the committee's selected format; past seasons use the one
   // they were played under (default 16-team).
@@ -22,14 +33,22 @@ export default function PointsTable() {
   const standings = standingsByGroup(teams, matches)
   const teamsById = indexById(teams)
   const groupsAvail = Object.keys(standings).sort()
-  const active = groupsAvail.includes(group) ? group : groupsAvail[0]
+  const tabs = groupsAvail.length > 0 ? ['overall', ...groupsAvail] : []
+  const active = tabs.includes(group) ? group : tabs[0]
   const photos = getSeason(season).photos || []
 
-  // The teams currently in the Super 8 — computed from live standings + the
-  // format's qualification rule, so the highlight is never hardcoded.
+  // Every team ranked 1..N across the tournament, so a side can see where it
+  // sits overall and not just inside its own group.
+  const overall = useMemo(() => overallStandings(teams, matches), [teams, matches])
+
+  // Who would go through on today's table — the projection, not the settled
+  // bracket, so the zone is meaningful while the group stage is still running.
+  // Withheld until something has actually been played: with every team on zero
+  // the ranking is arbitrary and highlighting eight of them would be a lie.
+  const played = groupMatchesPlayed(matches)
   const qualifiedIds = useMemo(
-    () => new Set(seededSuper8(teams, matches, format).map((q) => q.teamId)),
-    [teams, matches, format],
+    () => new Set(played > 0 ? projectedSuper8(teams, matches, format).map((q) => q.teamId) : []),
+    [teams, matches, format, played],
   )
 
   return (
@@ -50,6 +69,9 @@ export default function PointsTable() {
         ) : (
           <>
             <div className="tabs">
+              <button className={`tab ${active === 'overall' ? 'active' : ''}`} onClick={() => setGroup('overall')}>
+                All Teams
+              </button>
               {groupsAvail.map((g) => (
                 <button key={g} className={`tab ${active === g ? 'active' : ''}`} onClick={() => setGroup(g)}>
                   Group {g}
@@ -57,10 +79,30 @@ export default function PointsTable() {
               ))}
             </div>
 
-            <StandingsTable rows={standings[active] || []} teamsById={teamsById} qualifiedIds={qualifiedIds} />
+            {active === 'overall' ? (
+              <>
+                <StandingsTable rows={overall} teamsById={teamsById} qualifiedIds={qualifiedIds} showGroup />
+                <p className="table-note">
+                  {played === 0 ? (
+                    <>No matches played yet — the table fills in as results come through, and the
+                    Super 8 zone lights up once there is something to rank.</>
+                  ) : format.qualify === 'pure-pool' ? (
+                    <>Highlighted teams are the top {8} overall and would make the Super 8 on today’s
+                    table. {matchesLeft(matches)}</>
+                  ) : (
+                    <>Highlighted teams would make the Super 8 on today’s table. Because every group
+                    winner qualifies automatically, a side can go through from a lower overall rank
+                    than one that misses out — the <strong>Grp</strong> column shows each team’s group
+                    and its position in it. {matchesLeft(matches)}</>
+                  )}
+                </p>
+              </>
+            ) : (
+              <StandingsTable rows={standings[active] || []} teamsById={teamsById} qualifiedIds={qualifiedIds} />
+            )}
 
             <div className="legend">
-              <span className="k"><span className="swatch" style={{ background: 'var(--primary)' }} /> Super 8 qualification zone</span>
+              <span className="k"><span className="swatch" style={{ background: 'var(--primary)' }} /> Currently qualifying for the Super 8</span>
               <span className="k"><span className="swatch" style={{ background: 'var(--primary)' }} /> W</span>
               <span className="k"><span className="swatch" style={{ background: 'var(--gold)' }} /> Tie</span>
               <span className="k"><span className="swatch" style={{ background: '#47517f' }} /> L</span>

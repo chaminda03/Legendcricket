@@ -457,6 +457,10 @@ h1, h2, h3, h4 {
 .admin-toolbar.confirm-bar span { flex: 1; min-width: 260px; font-size: 0.9rem; line-height: 1.5; }
 .admin-toolbar.confirm-bar.danger { border-color: var(--secondary); background: rgba(255,46,116,0.07); }
 .confirm-inline { display: inline-flex; gap: 10px; align-items: center; white-space: nowrap; }
+.ladder .grp-cell { font-family: var(--head); font-weight: 800; letter-spacing: 0.04em; }
+.ladder .grp-pos { color: var(--muted-2); font-weight: 700; font-size: 0.8em; margin-left: 1px; }
+.table-note { margin-top: 14px; color: var(--muted); font-size: 0.88rem; line-height: 1.6; max-width: 760px; }
+.table-note strong { color: var(--text); }
 .result-line {
   display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;
   margin-top: 14px; padding: 9px 12px; font-size: 0.88rem; text-align: center;

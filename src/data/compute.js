@@ -120,6 +120,10 @@ export function groupMatchesRemaining(matches) {
   return matches.filter(isGroupMatch).filter((m) => !isPlayed(m)).length
 }
 
+export function groupMatchesPlayed(matches) {
+  return matches.filter(isGroupMatch).filter(isPlayed).length
+}
+
 export function groupStageComplete(matches) {
   const group = matches.filter(isGroupMatch)
   return group.length > 0 && group.every(isPlayed)
@@ -151,27 +155,41 @@ const bySeedRank = (a, b) =>
 // The 8 qualifiers, seeded 1..8, per the format's `qualify` rule.
 //   'pure-pool'          -> top 8 overall by Points -> NRR -> ARPW
 //   'winners-runnersup'  -> every group winner + best runners-up
-export function seededSuper8(teams, matches, format) {
-  // No qualifiers until every group game is in the book — a half-played table
-  // can't decide who goes through.
-  if (!groupStageComplete(matches)) return []
-
-  const standings = standingsByGroup(teams, matches)
+// Every team ranked across the whole tournament, 1..N, by the official
+// tie-breakers. Each row carries its group and position within it, because the
+// Super 8 rule can promote a group winner ahead of a higher-ranked team from a
+// stronger group — the overall rank alone doesn't tell you who goes through.
+export function overallStandings(teams, matches) {
+  const byGroup = standingsByGroup(teams, matches)
   const rows = []
-  Object.keys(standings).forEach((g) => {
-    standings[g].forEach((row, i) => rows.push({ ...row, group: g, groupPos: i + 1 }))
+  Object.keys(byGroup).forEach((g) => {
+    byGroup[g].forEach((row, i) => rows.push({ ...row, group: g, groupPos: i + 1 }))
   })
+  return rows.sort(bySeedRank).map((r, i) => ({ ...r, rank: i + 1 }))
+}
 
+// Who would go through on the table as it stands. Provisional: valid mid-stage,
+// which is what the public points table wants for its qualification highlight.
+export function projectedSuper8(teams, matches, format) {
+  const rows = overallStandings(teams, matches) // already in rank order
   let qualifiers
   if (format?.qualify === 'pure-pool') {
-    qualifiers = rows.slice().sort(bySeedRank).slice(0, SUPER8_SIZE)
+    qualifiers = rows.slice(0, SUPER8_SIZE)
   } else {
     const winners = rows.filter((r) => r.groupPos === 1)
-    const runnersUp = rows.filter((r) => r.groupPos === 2).sort(bySeedRank)
+    const runnersUp = rows.filter((r) => r.groupPos === 2)
     const remaining = Math.max(0, SUPER8_SIZE - winners.length)
     qualifiers = [...winners, ...runnersUp.slice(0, remaining)]
   }
   return qualifiers.sort(bySeedRank).map((q, i) => ({ ...q, seed: i + 1 }))
+}
+
+// The settled Super 8 — nothing until every group game is in the book, since a
+// half-played table can't decide who goes through. This is what the bracket and
+// the schedule's knockout slots seed from.
+export function seededSuper8(teams, matches, format) {
+  if (!groupStageComplete(matches)) return []
+  return projectedSuper8(teams, matches, format)
 }
 
 // Winner of a knockout match: prefer the explicit `winner` column, else derive

@@ -5,7 +5,9 @@ import { formatNRR } from '../data/standings'
 //   qualifiedIds  optional Set of team ids currently in the qualification zone;
 //                 when given it drives the highlight (format-aware). Otherwise
 //                 falls back to the first `qualify` rows.
-export default function StandingsTable({ rows = [], teamsById = {}, qualify = 2, qualifiedIds = null }) {
+//   showGroup     add a Group column — for the overall 1..N table, where rows
+//                 come from every group at once.
+export default function StandingsTable({ rows = [], teamsById = {}, qualify = 2, qualifiedIds = null, showGroup = false }) {
   const isQualified = (r, i) => (qualifiedIds ? qualifiedIds.has(r.teamId) : i < qualify)
   return (
     <div className="table-wrap ladder-full">
@@ -14,6 +16,7 @@ export default function StandingsTable({ rows = [], teamsById = {}, qualify = 2,
           <tr>
             <th>#</th>
             <th className="team-col">Team</th>
+            {showGroup && <th>Grp</th>}
             <th>P</th><th>W</th><th>L</th><th>T</th><th>NRR</th><th>Form</th><th>Pts</th>
           </tr>
         </thead>
@@ -29,6 +32,11 @@ export default function StandingsTable({ rows = [], teamsById = {}, qualify = 2,
                     <span className="tn">{team.name || 'Unknown'}</span>
                   </span>
                 </td>
+                {showGroup && (
+                  <td className="grp-cell">
+                    {r.group}<span className="grp-pos">{r.groupPos}</span>
+                  </td>
+                )}
                 <td>{r.played}</td>
                 <td>{r.won}</td>
                 <td>{r.lost}</td>
