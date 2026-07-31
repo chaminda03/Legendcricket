@@ -171,7 +171,10 @@ export function overallStandings(teams, matches) {
 // Who would go through on the table as it stands. Provisional: valid mid-stage,
 // which is what the public points table wants for its qualification highlight.
 export function projectedSuper8(teams, matches, format) {
-  const rows = overallStandings(teams, matches) // already in rank order
+  // A side that hasn't taken the field yet can't be shown as qualifying: on zero
+  // points it ranks by nothing but array order. Early on this means fewer than
+  // eight are highlighted, which is the honest answer.
+  const rows = overallStandings(teams, matches).filter((r) => r.played > 0)
   let qualifiers
   if (format?.qualify === 'pure-pool') {
     qualifiers = rows.slice(0, SUPER8_SIZE)
