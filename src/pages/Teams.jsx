@@ -7,9 +7,13 @@ import { useSeasonData } from '../hooks/useSeasonData'
 const initials = (name = '') =>
   name.split(/\s+/).filter(Boolean).slice(0, 3).map((w) => w[0]).join('').toUpperCase() || '—'
 
-// Squads are stored as one name per line on the team row.
+// Squads are stored as one name per line on the team row. Registration is a free
+// textarea, so collapse stray whitespace and drop empty lines.
 const squadOf = (t) =>
-  String(t.players || '').split('\n').map((n) => n.trim()).filter(Boolean)
+  String(t.players || '')
+    .split('\n')
+    .map((n) => n.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
 
 export default function Teams() {
   const { season } = useSeason()
