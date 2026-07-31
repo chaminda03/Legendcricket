@@ -7,6 +7,10 @@ import { useSeasonData } from '../hooks/useSeasonData'
 const initials = (name = '') =>
   name.split(/\s+/).filter(Boolean).slice(0, 3).map((w) => w[0]).join('').toUpperCase() || '—'
 
+// Squads are stored as one name per line on the team row.
+const squadOf = (t) =>
+  String(t.players || '').split('\n').map((n) => n.trim()).filter(Boolean)
+
 export default function Teams() {
   const { season } = useSeason()
   const { teams, loading } = useSeasonData(season)
@@ -24,7 +28,7 @@ export default function Teams() {
         <div className="section-head">
           <span className="eyebrow">The Contenders</span>
           <h2>Teams &amp; Groups</h2>
-          <p>Meet the clubs battling for the Virginia Legends trophy.</p>
+          <p>Meet the clubs battling for the Virginia Legends trophy, and the squads they’re fielding.</p>
         </div>
 
         <SeasonSelect />
@@ -42,12 +46,21 @@ export default function Teams() {
               <div className="grid grid-4">
                 {byGroup[g].map((t) => {
                   const color = t.color || '#3B82F6'
+                  const squad = squadOf(t)
                   return (
                     <div key={t.id} className="team-card">
                       <div className="accent" style={{ background: color }} />
                       <div className="team-badge" style={{ background: color }}>{t.short || initials(t.name)}</div>
                       <h3>{t.name}</h3>
                       <span className="group-pill">{g === 'TBD' ? 'Awaiting draw' : `Group ${g}`}</span>
+                      {squad.length > 0 && (
+                        <div className="squad">
+                          <div className="squad-head">Squad · {squad.length}</div>
+                          <ol className="squad-list">
+                            {squad.map((p, i) => <li key={i}>{p}</li>)}
+                          </ol>
+                        </div>
+                      )}
                     </div>
                   )
                 })}

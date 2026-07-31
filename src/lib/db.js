@@ -34,11 +34,28 @@ export async function fetchAllTeams(season = CURRENT_SEASON) {
   return data || []
 }
 
-// Public: only approved teams for a season.
+// Committee: approved teams for a season, whole row — the messaging tab needs
+// the captains' numbers. Runs as an authenticated user.
 export async function fetchApprovedTeams(season = CURRENT_SEASON) {
   const { data, error } = await supabase
     .from('teams')
     .select('*')
+    .eq('season', season)
+    .eq('status', 'approved')
+    .order('grp', { ascending: true })
+  if (error) throw new Error(error.message)
+  return data || []
+}
+
+// Public site: the same teams, but only the columns the public pages render.
+// Contact details are never fetched — see the anon column grant in
+// supabase-schema.sql, which enforces the same restriction server-side.
+export const PUBLIC_TEAM_COLUMNS = 'id, season, name, short, color, grp, players, status'
+
+export async function fetchPublicTeams(season = CURRENT_SEASON) {
+  const { data, error } = await supabase
+    .from('teams')
+    .select(PUBLIC_TEAM_COLUMNS)
     .eq('season', season)
     .eq('status', 'approved')
     .order('grp', { ascending: true })

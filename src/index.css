@@ -312,6 +312,20 @@ h1, h2, h3, h4 {
   text-transform: uppercase; color: var(--muted);
   border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px;
 }
+.squad { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+.squad-head {
+  font-family: var(--head); font-weight: 700; font-size: 0.74rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted-2); margin-bottom: 8px;
+}
+.squad-list { list-style: none; counter-reset: sq; display: grid; gap: 5px; }
+.squad-list li {
+  counter-increment: sq; display: flex; gap: 8px; align-items: baseline;
+  font-size: 0.88rem; line-height: 1.4; overflow-wrap: anywhere;
+}
+.squad-list li::before {
+  content: counter(sq); flex-shrink: 0; width: 16px;
+  font-family: var(--head); font-weight: 700; font-size: 0.75rem; color: var(--muted-2);
+}
 
 /* ---------- Tables (points table) ---------- */
 .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }

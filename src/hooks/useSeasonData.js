@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { TEAMS } from '../data/teams'
 import { getSeason, CURRENT_SEASON } from '../data/seasons'
-import { fetchApprovedTeams, fetchMatches } from '../lib/db'
+import { fetchPublicTeams, fetchMatches } from '../lib/db'
 import { isSupabaseConfigured } from '../lib/supabase'
 
 // Normalises a season into a shared shape: { teams, matches } where both static
@@ -38,7 +38,7 @@ export function useSeasonData(year) {
       return
     }
     setState((s) => ({ ...s, loading: true }))
-    Promise.all([fetchApprovedTeams(year), fetchMatches(year)])
+    Promise.all([fetchPublicTeams(year), fetchMatches(year)])
       .then(([teams, matches]) => { if (active) setState({ teams, matches, loading: false, error: '', live: true }) })
       .catch((err) => { if (active) setState({ teams: [], matches: [], loading: false, error: err.message, live: true }) })
     return () => { active = false }

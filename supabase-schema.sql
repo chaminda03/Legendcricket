@@ -61,6 +61,18 @@ create policy "public can read approved teams"
   on public.teams for select to anon
   using (status = 'approved');
 
+-- RLS filters ROWS, not COLUMNS: the policy above let anyone with the public
+-- anon key read every captain's phone number and email straight off the REST
+-- endpoint. Column privileges are what restrict that, so hand the anon role only
+-- the columns the public site renders. Squad names stay readable (the Teams page
+-- lists them); contact details do not.
+--
+-- Paired with fetchPublicTeams() in src/lib/db.js, which selects exactly these —
+-- an anon `select=*` fails once the grant is narrowed, by design.
+revoke select on public.teams from anon;
+grant  select (id, created_at, season, name, short, color, grp, players, status)
+  on public.teams to anon;
+
 -- Public can READ all matches (fixtures + results).
 drop policy if exists "public can read matches" on public.matches;
 create policy "public can read matches"
