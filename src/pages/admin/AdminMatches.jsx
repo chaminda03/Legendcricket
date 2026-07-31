@@ -6,7 +6,7 @@ import {
   generateGroupFixtures, saveMatchScore, clearGroupFixtures,
   saveKnockoutScore, clearKnockouts,
 } from '../../lib/db'
-import { standingsByGroup, seededSuper8, buildBracketFrom, knockoutResultsFromMatches } from '../../data/compute'
+import { standingsByGroup, seededSuper8, buildBracketFrom, knockoutResultsFromMatches, groupMatchesRemaining } from '../../data/compute'
 import { formatNRR } from '../../data/standings'
 import { CURRENT_SEASON } from '../../data/seasons'
 import { OVERS_PER_INNINGS } from '../../data/fixtures'
@@ -104,6 +104,7 @@ export default function AdminMatches() {
   const koResults = useMemo(() => knockoutResultsFromMatches(matches), [matches])
   const bracket = useMemo(() => buildBracketFrom(seeds, koResults), [seeds, koResults])
   const koReady = seeds.length === 8
+  const koRemaining = groupMatchesRemaining(matches)
   const koMatches = [...bracket.quarterfinals, ...bracket.semifinals, bracket.final]
 
   const setKoDraft = (code, field, val) =>
@@ -252,7 +253,10 @@ export default function AdminMatches() {
         <h3 className="admin-group-title">Knockout Stage · Super 8</h3>
         <p className="muted" style={{ marginTop: -6, marginBottom: 12 }}>{qualifyLabel(format)}</p>
         {!koReady ? (
-          <p className="muted">The bracket unlocks once the group stage decides 8 qualifiers — {seeds.length}/8 seeded so far.</p>
+          <p className="muted">
+            The bracket unlocks once every group match has a score —
+            {' '}{koRemaining} still to be played.
+          </p>
         ) : (
           <>
             <div className="admin-toolbar">

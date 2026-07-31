@@ -3,7 +3,7 @@ import SeasonSelect from '../components/SeasonSelect'
 import { useSeason } from '../context/SeasonContext'
 import { useFormat } from '../context/FormatContext'
 import { useSeasonData } from '../hooks/useSeasonData'
-import { seededSuper8, buildBracketFrom, knockoutResultsFromMatches, indexById } from '../data/compute'
+import { seededSuper8, buildBracketFrom, knockoutResultsFromMatches, indexById, groupMatchesRemaining } from '../data/compute'
 import { formatNRR } from '../data/standings'
 import { CURRENT_SEASON, getSeason } from '../data/seasons'
 import { getFormat } from '../data/formats'
@@ -64,6 +64,7 @@ export default function Knockouts() {
   )
   const championTeam = champion ? teamsById[champion] : null
   const ready = seeds.length === 8
+  const remaining = groupMatchesRemaining(matches)
 
   return (
     <section className="section">
@@ -80,8 +81,13 @@ export default function Knockouts() {
           <div className="empty">Loading bracket…</div>
         ) : !ready ? (
           <div className="empty">
-            🏏 The Super 8 bracket unlocks once the group stage decides eight qualifiers.
-            <br /><span className="muted">{seeds.length}/8 seeded so far.</span>
+            🏏 The Super 8 bracket unlocks once the group stage is complete.
+            <br />
+            <span className="muted">
+              {remaining > 0
+                ? `${remaining} group ${remaining === 1 ? 'match' : 'matches'} still to be played.`
+                : 'Waiting on the group draw.'}
+            </span>
           </div>
         ) : (
           <>

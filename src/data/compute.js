@@ -112,6 +112,19 @@ export const indexById = (teams) => Object.fromEntries(teams.map((t) => [t.id, t
 // Group standings must ignore knockout matches (they carry no group).
 const isGroupMatch = (m) => m.grp != null && m.stage !== 'knockout'
 
+// Group matches still to be played. Until this hits zero the standings are
+// provisional: with nothing played every team is level on 0 points, so a naive
+// "top two per group" would seed the bracket with real names before a ball is
+// bowled. Also drives the "N still to play" copy on the bracket pages.
+export function groupMatchesRemaining(matches) {
+  return matches.filter(isGroupMatch).filter((m) => !isPlayed(m)).length
+}
+
+export function groupStageComplete(matches) {
+  const group = matches.filter(isGroupMatch)
+  return group.length > 0 && group.every(isPlayed)
+}
+
 // { A: [sortedRows], B: [...], ... } — only teams that have a group.
 export function standingsByGroup(teams, matches) {
   const rows = computeRows(teams, matches.filter(isGroupMatch))
@@ -139,6 +152,10 @@ const bySeedRank = (a, b) =>
 //   'pure-pool'          -> top 8 overall by Points -> NRR -> ARPW
 //   'winners-runnersup'  -> every group winner + best runners-up
 export function seededSuper8(teams, matches, format) {
+  // No qualifiers until every group game is in the book — a half-played table
+  // can't decide who goes through.
+  if (!groupStageComplete(matches)) return []
+
   const standings = standingsByGroup(teams, matches)
   const rows = []
   Object.keys(standings).forEach((g) => {
