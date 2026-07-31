@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ConfirmBar from '../../components/ConfirmBar'
 import {
   fetchApprovedTeams, fetchMatches,
   generateGroupFixtures, saveMatchScore, clearGroupFixtures,
@@ -25,6 +26,9 @@ export default function AdminMatches() {
   const [savingId, setSavingId] = useState(null)
   const [koDrafts, setKoDrafts] = useState({})
   const [koSavingCode, setKoSavingCode] = useState(null)
+  // Inline confirmation — window.confirm() blocks the main thread while it is
+  // open, which Chrome counts against INP. 'generate' | 'clear-group' | 'clear-ko'
+  const [confirming, setConfirming] = useState(null)
 
   const scoreDraft = (m) => ({
     home_runs: m.home_runs ?? '', home_wkts: m.home_wkts ?? '', home_overs: m.home_overs ?? '',
@@ -68,14 +72,14 @@ export default function AdminMatches() {
   const num = (v) => (v === '' || v == null ? null : Number(v))
 
   const generate = async () => {
-    if (!window.confirm(`Generate fixtures for every group from the current draw (${matchesLabel(format)})?`)) return
+    setConfirming(null)
     setBusy(true); setError('')
     try { await generateGroupFixtures(CURRENT_SEASON, teams, format.matchesPerTeam); await load() }
     catch (err) { setError(err.message) } finally { setBusy(false) }
   }
 
   const clearAll = async () => {
-    if (!window.confirm('Delete ALL group fixtures and their scores? This cannot be undone.')) return
+    setConfirming(null)
     setBusy(true); setError('')
     try { await clearGroupFixtures(CURRENT_SEASON); await load() }
     catch (err) { setError(err.message) } finally { setBusy(false) }
@@ -118,7 +122,7 @@ export default function AdminMatches() {
   }
 
   const clearKo = async () => {
-    if (!window.confirm('Delete all knockout results? This cannot be undone.')) return
+    setConfirming(null)
     setBusy(true); setError('')
     try { await clearKnockouts(CURRENT_SEASON); await load() }
     catch (err) { setError(err.message) } finally { setBusy(false) }
@@ -135,7 +139,7 @@ export default function AdminMatches() {
       <div className="admin-toolbar">
         {groupMatches.length === 0 ? (
           <>
-            <button className="btn btn-primary" disabled={busy || groupedTeamCount < 2} onClick={generate}>
+            <button className="btn btn-primary" disabled={busy || groupedTeamCount < 2} onClick={() => setConfirming('generate')}>
               {busy ? 'Generating…' : '⚙️ Generate Group Fixtures'}
             </button>
             <span className="muted">
@@ -147,10 +151,23 @@ export default function AdminMatches() {
         ) : (
           <>
             <span className="muted">{groupMatches.length} matches · {groupMatches.filter((m) => m.status === 'completed').length} played</span>
-            <button className="btn btn-ghost" disabled={busy} onClick={clearAll}>Clear all fixtures</button>
+            <button className="btn btn-ghost" disabled={busy} onClick={() => setConfirming('clear-group')}>Clear all fixtures</button>
           </>
         )}
       </div>
+
+      {confirming === 'generate' && (
+        <ConfirmBar confirmLabel="Generate them" busy={busy}
+          onConfirm={generate} onCancel={() => setConfirming(null)}>
+          Generate fixtures for every group from the current draw ({matchesLabel(format)})?
+        </ConfirmBar>
+      )}
+      {confirming === 'clear-group' && (
+        <ConfirmBar danger confirmLabel="Delete them" busy={busy}
+          onConfirm={clearAll} onCancel={() => setConfirming(null)}>
+          Delete <strong>all {groupMatches.length} group fixtures</strong> and their scores? This cannot be undone.
+        </ConfirmBar>
+      )}
 
       {/* Scoring hint — matters for correct NRR */}
       {groupMatches.length > 0 && (
@@ -240,8 +257,15 @@ export default function AdminMatches() {
           <>
             <div className="admin-toolbar">
               <span className="muted">Seeds: {seeds.map((s) => `#${s.seed} ${short(s.teamId)}`).join(' · ')}</span>
-              <button className="btn btn-ghost" disabled={busy} onClick={clearKo}>Clear knockout results</button>
+              <button className="btn btn-ghost" disabled={busy} onClick={() => setConfirming('clear-ko')}>Clear knockout results</button>
             </div>
+            {confirming === 'clear-ko' && (
+              <ConfirmBar danger confirmLabel="Delete them" busy={busy}
+                onConfirm={clearKo} onCancel={() => setConfirming(null)}>
+                Delete all knockout results? This cannot be undone. Any kick-off times set on the
+                Schedule tab go with them.
+              </ConfirmBar>
+            )}
             <div className="admin-matches">
               {koMatches.map((bm) => {
                 const known = bm.a && bm.b

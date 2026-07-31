@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ConfirmBar from '../../components/ConfirmBar'
 import {
   fetchApprovedTeams, fetchMatches, saveSchedule, insertKnockoutSlots, clearSchedule,
 } from '../../lib/db'
@@ -210,23 +211,19 @@ export default function AdminSchedule() {
       </div>
 
       {confirming === 'build' && (
-        <div className="admin-toolbar confirm-bar">
-          <span>
-            Lay out <strong>{groupMatches.length} group matches</strong> across {fields} fields from{' '}
-            <strong>{formatTime(start)}</strong>, {slotMinutes} minutes a slot, then the knockouts after?
-            Any times already set are overwritten.
-          </span>
-          <button className="btn btn-primary btn-sm" onClick={autoBuild}>Yes, build it</button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setConfirming(null)}>Cancel</button>
-        </div>
+        <ConfirmBar confirmLabel="Yes, build it" busy={busy}
+          onConfirm={autoBuild} onCancel={() => setConfirming(null)}>
+          Lay out <strong>{groupMatches.length} group matches</strong> across {fields} fields from{' '}
+          <strong>{formatTime(start)}</strong>, {slotMinutes} minutes a slot, then the knockouts after?
+          Any times already set are overwritten.
+        </ConfirmBar>
       )}
 
       {confirming === 'clear' && (
-        <div className="admin-toolbar confirm-bar">
-          <span>Clear every kick-off time and field? Scores are not affected.</span>
-          <button className="btn btn-primary btn-sm" onClick={clearAll}>Yes, clear it</button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setConfirming(null)}>Cancel</button>
-        </div>
+        <ConfirmBar danger confirmLabel="Yes, clear it" busy={busy}
+          onConfirm={clearAll} onCancel={() => setConfirming(null)}>
+          Clear every kick-off time and field? Scores are not affected.
+        </ConfirmBar>
       )}
 
       {groupMatches.length === 0 ? (

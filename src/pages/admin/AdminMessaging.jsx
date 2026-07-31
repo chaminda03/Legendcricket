@@ -9,6 +9,7 @@ import { useFormat } from '../../context/FormatContext'
 import { templateByKey } from '../../data/messageTemplates'
 import { indexById, standingsByGroup } from '../../data/compute'
 import { broadcastMessages, qualificationMessages, resultMessages, estimateCost, normalizePhone } from '../../lib/messaging'
+import ConfirmBar from '../../components/ConfirmBar'
 
 export default function AdminMessaging() {
   const { format } = useFormat()
@@ -23,6 +24,7 @@ export default function AdminMessaging() {
   const [busy, setBusy] = useState(false)
   const [upNextDetail, setUpNextDetail] = useState('')
   const [customMsg, setCustomMsg] = useState('')
+  const [pending, setPending] = useState(null) // send staged for confirmation
 
   const load = async () => {
     try {
@@ -53,15 +55,22 @@ export default function AdminMessaging() {
     try { await updateTemplate(key, patch) } catch (err) { setError(err.message) }
   }
 
-  // Confirm (count + cost), send, report, refresh the log.
-  const send = async (label, messages, test = false) => {
+  // Stage the send for confirmation. Held in state rather than shown through
+  // window.confirm(), which blocks the main thread for as long as it is open.
+  const send = (label, messages, test = false) => {
     setError(''); setNotice('')
     if (!test && messages.length === 0) { setError('No recipients — none of these teams have a phone number saved.'); return }
-    const cost = estimateCost(messages.length).toFixed(2)
-    if (!window.confirm(`${label}\n\nSend ${messages.length} SMS (~$${cost})?`)) return
+    setPending({ label, messages, test, cost: estimateCost(messages.length).toFixed(2) })
+  }
+
+  // Confirmed: send, report, refresh the log.
+  const confirmSend = async () => {
+    const p = pending
+    setPending(null)
+    if (!p) return
     setBusy(true)
     try {
-      const res = await sendSms({ messages, test })
+      const res = await sendSms({ messages: p.messages, test: p.test })
       if (res?.skipped) setNotice(`⚠️ Not sent — ${res.reason}. Flip “Messaging” ON to send for real.`)
       else setNotice(`${res.redirected ? '🧪 TEST MODE — ' : ''}Sent ${res.sent}, failed ${res.failed}.`)
       await refreshLog()
@@ -85,6 +94,13 @@ export default function AdminMessaging() {
     <>
       {error && <div className="alert error">⚠️ {error} <button className="linklike" onClick={() => setError('')}>dismiss</button></div>}
       {notice && <div className="alert ok">{notice} <button className="linklike" onClick={() => setNotice('')}>dismiss</button></div>}
+
+      {pending && (
+        <ConfirmBar danger confirmLabel={`Send ${pending.messages.length}`} busy={busy}
+          onConfirm={confirmSend} onCancel={() => setPending(null)}>
+          <strong>{pending.label}</strong> — send {pending.messages.length} SMS (~${pending.cost})?
+        </ConfirmBar>
+      )}
 
       {/* Master controls */}
       <div className="msg-panel">

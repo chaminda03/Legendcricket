@@ -49,6 +49,9 @@ export default function AdminTeams() {
   const [error, setError] = useState('')
   const [savingId, setSavingId] = useState(null)
   const [filter, setFilter] = useState('all')
+  // Two-step delete rather than window.confirm(): the native dialog blocks the
+  // main thread while open, and Chrome bills that time to the click.
+  const [confirmDelete, setConfirmDelete] = useState(null)
 
   const load = async () => {
     try { setTeams(await fetchAllTeams(CURRENT_SEASON)); setStatus('ready') }
@@ -66,7 +69,7 @@ export default function AdminTeams() {
   }
 
   const remove = async (id) => {
-    if (!window.confirm('Delete this team registration permanently?')) return
+    setConfirmDelete(null)
     const prev = teams
     setTeams(teams.filter((t) => t.id !== id))
     try { await deleteTeam(id) } catch (err) { setTeams(prev); setError(err.message) }
@@ -155,7 +158,16 @@ export default function AdminTeams() {
                       {GROUPS.map((g) => <option key={g} value={g}>Group {g}</option>)}
                     </select>
                   </td>
-                  <td><button className="linklike danger" onClick={() => remove(t.id)}>Delete</button></td>
+                  <td>
+                    {confirmDelete === t.id ? (
+                      <span className="confirm-inline">
+                        <button className="linklike danger" onClick={() => remove(t.id)}>Delete for good</button>
+                        <button className="linklike" onClick={() => setConfirmDelete(null)}>Cancel</button>
+                      </span>
+                    ) : (
+                      <button className="linklike danger" onClick={() => setConfirmDelete(t.id)}>Delete</button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
