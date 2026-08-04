@@ -6,7 +6,7 @@ import { CURRENT_SEASON, LAST_COMPLETED_SEASON, editionForSeason, ordinal } from
 import { useFormat } from '../context/FormatContext'
 import { useSeasonData } from '../hooks/useSeasonData'
 import { standingsByGroup, indexById } from '../data/compute'
-import { SLIDES, VALUES, GALLERY, ABOUT_IMAGE } from '../data/home'
+import { SLIDES, VALUES, GALLERY, ABOUT_IMAGE, SPONSORS } from '../data/home'
 
 const features = [
   { ic: '🏆', title: 'Live Points Table', text: 'Four groups, real-time standings with Net Run Rate, form guide and qualification tracking.', to: '/points-table' },
@@ -172,13 +172,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SPONSORS */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">Thank you</span>
+            <h2>Our {CURRENT_SEASON} sponsors</h2>
+            <p>The carnival runs on the generosity of the people below. If you're buying or selling in the DMV, give them a call.</p>
+          </div>
+          <div className="sponsor-grid">
+            {SPONSORS.map((s) => (
+              <div key={s.name} className="sponsor-card">
+                <img src={s.image} alt={`Thank you to ${s.name}`} loading="lazy" />
+                <div className="sponsor-body">
+                  <h3>{s.name}</h3>
+                  {s.org && <div className="org">{s.org}</div>}
+                  <ul className="sponsor-contact">
+                    {s.address && <li><span aria-hidden="true">📍</span>{s.address}</li>}
+                    {s.phone && <li><span aria-hidden="true">📞</span><a href={`tel:${s.phone.replace(/\D/g, '')}`}>{s.phone}</a></li>}
+                    {s.email && <li><span aria-hidden="true">✉️</span><a href={`mailto:${s.email}`}>{s.email}</a></li>}
+                    {s.link && <li><span aria-hidden="true">🔗</span><a href={s.link} target="_blank" rel="noopener noreferrer">{s.linkLabel || s.link}</a></li>}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="cta-band">
             <h2>Your team belongs on this stage</h2>
-            <p>Entries for Season {CURRENT_SEASON} have closed and the draw is set. See who plays who, when, and on which field.</p>
-            <Link to="/schedule" className="btn btn-primary btn-lg">View the Schedule</Link>
+            <p>Season {CURRENT_SEASON} is in the books — Kurumba Cricket Club are your champions. Walk back through every group game and the road to the final.</p>
+            <Link to="/knockouts" className="btn btn-primary btn-lg">See the Bracket</Link>
           </div>
         </div>
       </section>

@@ -5,17 +5,22 @@ import { FIXTURES } from './fixtures'
 //  so the site can show any year's standings / bracket from the dropdown.
 //
 //  2025 = the completed championship (real data, champion: Challengers Green).
-//  2026 = the upcoming season — the field is set, fixtures TBA.
+//  2026 = played Aug 1 2026, champion: Kurumba Cricket Club (live data in Supabase).
 // ============================================================================
 
 export const SEASONS = {
   2026: {
     year: 2026,
-    status: 'upcoming', // entries closed, not started yet
-    tagline: 'Registration Closed',
+    status: 'completed',
+    tagline: 'Champions · Kurumba Cricket Club',
+    // Fixtures, knockout results and the champion for 2026 come from Supabase
+    // (see useSeasonData / Knockouts), so they stay empty here by design.
     fixtures: [],
     knockoutResults: {},
     champion: null,
+    photos: [
+      { src: '/images/2026-champions-kurumba.jpg', label: 'Champions — Kurumba Cricket Club', champion: true },
+    ],
   },
   2025: {
     year: 2025,

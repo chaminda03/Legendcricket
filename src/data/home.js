@@ -26,12 +26,12 @@ export const SLIDES = [
   },
   {
     id: 'season',
-    eyebrow: 'Season 2026',
-    title: 'Registration Is Now Closed',
-    text: 'The field is set for the biggest cricket carnival in the DMV. Check the match-day schedule for kick-off times and fields.',
+    eyebrow: 'Season 2026 · Champions',
+    title: 'Kurumba Cricket Club',
+    text: 'Kurumba lift the Legends trophy at the 2026 carnival. Relive the road to the final in the points table and knockout bracket.',
     cta: null,
-    image: '/images/va-legends-squad.jpg',
-    focus: 'center 68%', // players sit low in this frame — crop down onto them
+    image: '/images/2026-champions-kurumba.jpg',
+    focus: 'center 40%', // team + trophy sit mid-frame in this wide shot
     gradient: 'g3',
   },
 ]
@@ -47,8 +47,34 @@ export const VALUES = [
 ]
 
 export const GALLERY = [
+  { label: '2026 Champions — Kurumba', image: '/images/2026-champions-kurumba.jpg', gradient: 'g3' },
   { label: 'Team VA Legends', image: '/images/va-legends-squad.jpg', gradient: 'g2' },
   { label: 'VA Legends Winners', image: '/images/va-legends-winners.jpg', gradient: 'g3' },
-  { label: 'The Champions', image: '/images/legends-winners-enhanced.jpg', gradient: 'g3' },
   { label: 'On the Field', image: '/images/va-legends-team-enhanced.jpg', gradient: 'g2' },
+]
+
+// Tournament sponsors, newest season first. `image` is the thank-you card; the
+// contact block below it is rendered from these fields, so anything left out
+// (e.g. `org`) is simply skipped rather than showing an empty line.
+export const SPONSORS = [
+  {
+    name: 'Marshall Wickramaratne',
+    org: 'Samson Properties',
+    image: '/images/2026-sponsor-marshall.jpg',
+    address: '14291 Park Meadow Dr, Chantilly, VA 20151',
+    phone: '(703) 727-8649',
+    email: 'marshallw@dilhome.com',
+    link: 'https://www.dilhome.com/',
+    linkLabel: 'dilhome.com',
+  },
+  {
+    name: 'Madusha Peiris',
+    org: null,
+    image: '/images/2026-sponsor-madusha.jpg',
+    address: '10411 Motor City Dr, Ste 402, Bethesda, MD 20817',
+    phone: '(240) 893-6910',
+    email: 'tjmadusha@gmail.com',
+    link: 'https://www.facebook.com/MPeirisRealtor/',
+    linkLabel: 'Facebook',
+  },
 ]

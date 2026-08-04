@@ -264,6 +264,28 @@ h1, h2, h3, h4 {
   font-family: var(--head); font-weight: 700; font-size: 1.2rem; letter-spacing: 0.03em;
 }
 
+/* ---------- Sponsors ---------- */
+.sponsor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.sponsor-card {
+  display: grid; grid-template-columns: 190px 1fr; align-items: stretch;
+  background: linear-gradient(180deg, var(--surface), var(--bg-2));
+  border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+}
+.sponsor-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sponsor-body { padding: 20px 22px; min-width: 0; }
+.sponsor-body h3 { font-size: 1.3rem; margin-bottom: 2px; }
+.sponsor-body .org {
+  font-family: var(--head); font-weight: 700; color: var(--primary);
+  letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.82rem; margin-bottom: 12px;
+}
+.sponsor-contact { list-style: none; display: grid; gap: 8px; }
+.sponsor-contact li {
+  display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start;
+  color: var(--muted); font-size: 0.92rem; line-height: 1.45; overflow-wrap: anywhere;
+}
+.sponsor-contact a { color: var(--muted); text-decoration: none; }
+.sponsor-contact a:hover { color: var(--primary); text-decoration: underline; }
+
 /* ---------- Cards / grids ---------- */
 .grid { display: grid; gap: 18px; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
@@ -723,6 +745,11 @@ h1, h2, h3, h4 {
 @media (max-width: 900px) {
   .about-grid { grid-template-columns: 1fr; gap: 26px; }
   .values-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  /* Stack the thank-you card above the contact details rather than squeezing it. */
+  .sponsor-card { grid-template-columns: 1fr; }
+  .sponsor-card img { aspect-ratio: 1 / 1; }
 }
 @media (max-width: 600px) {
   .container { padding: 0 15px; }
