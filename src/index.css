@@ -265,7 +265,9 @@ h1, h2, h3, h4 {
 }
 
 /* ---------- Sponsors ---------- */
-.sponsor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+/* min() so the track can shrink below 320px on narrow phones instead of
+   forcing the grid wider than the screen. */
+.sponsor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 20px; }
 .sponsor-card {
   display: grid; grid-template-columns: 190px 1fr; align-items: stretch;
   background: linear-gradient(180deg, var(--surface), var(--bg-2));
@@ -604,7 +606,7 @@ h1, h2, h3, h4 {
 .champion-banner .name { font-family: var(--head); font-weight: 800; font-size: 1.5rem; line-height: 1; margin-top: 4px; }
 
 /* ---------- Season photo showcase (Points Table) ---------- */
-.season-photos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.season-photos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px; }
 .photo-card { position: relative; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--border); aspect-ratio: 3 / 2; margin: 0; }
 .photo-card img { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
 .photo-card .cap {
@@ -804,6 +806,47 @@ h1, h2, h3, h4 {
   .values-grid { grid-template-columns: 1fr; }
   .brand-text .t1 { font-size: 1.02rem; }
   .brand-text .t2 { font-size: 0.65rem; }
+}
+
+/* ---------- Wide layouts that can't survive a phone ----------
+   Three blocks were still forcing a horizontal scroll: the match-day schedule
+   (a column per field), the knockout bracket (three fixed columns) and the
+   Qualified Teams table. Each collapses to a single column here instead. */
+@media (max-width: 700px) {
+  /* Match-day schedule → one card per time slot, matches labelled by field. */
+  .schedule-wrap { border: 0; border-radius: 0; overflow-x: visible; background: transparent; }
+  .schedule-table { min-width: 0; display: block; background: transparent; }
+  .schedule-table thead { display: none; }
+  .schedule-table tbody { display: block; }
+  .schedule-table tbody tr {
+    display: block; background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px 14px; margin-bottom: 12px;
+  }
+  .schedule-table tbody td { display: block; padding: 0; border-bottom: 0; }
+  .schedule-table tbody td.slot-empty { display: none; } /* free fields add nothing here */
+  .schedule-table tbody .time-col {
+    width: auto; padding-bottom: 10px; margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .schedule-table tbody td[data-field]::before {
+    content: attr(data-field);
+    display: block; font-family: var(--head); font-weight: 700; font-size: 0.72rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2);
+    margin: 12px 0 6px;
+  }
+  .slot-card { min-width: 0; }
+
+  /* Knockout bracket → stack the rounds; each column already has its heading. */
+  .bracket { grid-template-columns: 1fr; gap: 24px; overflow-x: visible; }
+  .bracket-col { min-width: 0; }
+  .bracket-col.center, .bracket-col.right { justify-content: flex-start; }
+
+  /* Qualified Teams — only five columns, so it just needs to stop being 640px. */
+  .ladder-slim .ladder { min-width: 0; width: 100%; }
+  .ladder-slim .ladder thead th { padding: 11px 6px; font-size: 0.7rem; }
+  .ladder-slim .ladder tbody td { padding: 11px 6px; font-size: 0.88rem; }
+  .ladder-slim .ladder .tn { font-size: 0.85rem; line-height: 1.15; }
+  .ladder-slim .ladder .tb { width: 26px; height: 26px; font-size: 0.68rem; }
 }
 
 /* ---------- Rules page ---------- */

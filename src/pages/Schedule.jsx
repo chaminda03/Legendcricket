@@ -95,7 +95,7 @@ export default function Schedule() {
             <br /><span className="muted">Kick-off times and field allocations appear here once the committee sets them.</span>
           </div>
         ) : (
-          <div className="table-wrap">
+          <div className="table-wrap schedule-wrap">
             <table className="schedule-table">
               <thead>
                 <tr>
@@ -108,7 +108,10 @@ export default function Schedule() {
                   <tr key={r.time}>
                     <td className="time-col"><span className="slot-time">{formatTime(r.time)}</span></td>
                     {r.cells.map((cell, i) => (
-                      <td key={fields[i]}>
+                      // data-field / slot-empty drive the phone layout, where the
+                      // field-per-column grid collapses into one card per time slot.
+                      <td key={fields[i]} data-field={`Field ${fields[i]}`}
+                          className={cell.length === 0 ? 'slot-empty' : ''}>
                         {cell.length === 0
                           ? <span className="slot-free">—</span>
                           : cell.map((m) => (

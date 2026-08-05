@@ -118,7 +118,7 @@ export default function Knockouts() {
               <span className="eyebrow">Seeding</span>
               <h2 style={{ fontSize: '1.8rem' }}>Qualified Teams</h2>
             </div>
-            <div className="table-wrap">
+            <div className="table-wrap ladder-slim">
               <table className="ladder">
                 <thead>
                   <tr>
